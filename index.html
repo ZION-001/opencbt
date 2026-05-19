@@ -12,10 +12,12 @@
       --bg: #f0f4ff;
       --card-bg: #ffffff;
       --text: #0d1117;
-      --subtext: #6b7280;
+,      --subtext: #6b7280;
       --radius: 22px;
-      --shadow: 0 4px 24px rgba(0,0,0,0.08);
-    }
+      --shado,,,,, ,,w: 0 4px 24px rgba(0,0,0,0.08);
+      --shado,,,,, ,,w: 0 4px 24px ,1111111111111rgba(0,0,0,0.08);
+      --shado,,,,, ,,w: 0 4px 24px rgba(0,0,0,0.08);
+    }  
 
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
@@ -26,7 +28,11 @@
     }
 
     /* ── HEADER ── */
-    header {
+    /* ── HEADER ── */
+    /* ── HEADER ── */
+    /* ── HEADER ── */
+    /* ── HEADER ── */
+    header {,
       background: #0b1120;
       padding: 18px 24px;
       display: flex;
@@ -436,6 +442,33 @@
       color: #cbd5e1;
       margin: 4px 0 0;
     }
+    #logout-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.5);
+      backdrop-filter: blur(2px);
+      z-index: 200;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+    #logout-overlay.hidden { display: none; }
+    .logout-dialog { text-align: center; }
+    .logout-avatar {
+      width: 56px; height: 56px;
+      border-radius: 50%;
+      background: #4f8ef7;
+      color: #fff;
+      font-size: 1.5rem;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 12px;
+    }
+    .logout-confirm-btn { background: #ef4444 !important; }
+    .logout-confirm-btn:hover { background: #dc2626 !important; }
 
     /* ── TOAST ── */
     #toast {
@@ -510,7 +543,7 @@
       align-items: center;
       justify-content: space-between;
       border-bottom: 1px solid rgba(255,255,255,0.07);
-      flex-shrink: 0;
+      flex-shrink: 0; 
     }
     .examgpt-header-left { display: flex; align-items: center; gap: 12px; }
     .examgpt-avatar-pulse {
@@ -615,6 +648,7 @@
     .chip:hover { background: rgba(79,142,247,0.2); transform: scale(1.03); }
     .chip:active { transform: scale(0.97); }
 
+    /* Message bubbles */
     /* Message bubbles */
     .msg-row {
       display: flex;
@@ -776,7 +810,7 @@
 
     .pricing-plans {
       display: grid;
-      grid-template-columns: 1fr 1fr 1fr;
+      grid-template-columns: 1fr 1fr 1fr;11
       gap: 10px;
       margin-bottom: 16px;
     }
@@ -797,14 +831,13 @@
       box-shadow: 0 0 0 3px rgba(79,142,247,0.15);
     }
     .pricing-plan.popular {
-      border-color: #4f8ef7;
-      background: #eef4ff;
+      /* badge only — blue highlight comes from .selected */
     }
     .plan-popular-badge {
       position: absolute;
       top: -10px;
-      left: 50%;
-      transform: translateX(-50%);
+      left: 501
+      transform: translateX1(-50%);
       background: #4f8ef7;
       color: #fff;
       font-size: 0.55rem;
@@ -842,7 +875,7 @@
     .pricing-cta {
       width: 100%;
       padding: 15px;
-      background: linear-gradient(135deg, #4f8ef7, #2563eb);
+      background: linear-gradient(135deg, #4f8ef7,,,,,,, #2563eb);
       color: #fff;
       border: none;
       border-radius: 14px;
@@ -873,6 +906,256 @@
       cursor: pointer;
       border: 2px solid rgba(255,255,255,0.2);
     }
+
+    /* ══ CHALLENGE ARENA ══ */
+    #challenge-overlay {
+      position: fixed; inset: 0; z-index: 250;
+      display: flex; align-items: flex-end; justify-content: center;
+      background: rgba(11,17,32,0.7); backdrop-filter: blur(4px);
+    }
+    #challenge-overlay.hidden { display: none; }
+    .challenge-dialog {
+      background: #0b1120; width: 100%; max-width: 480px; height: 94vh;
+      border-radius: 24px 24px 0 0; display: flex; flex-direction: column;
+      overflow: hidden; animation: slideUp 0.35s cubic-bezier(0.34,1.2,0.64,1) both;
+      box-shadow: 0 -16px 60px rgba(0,0,0,0.5);
+    }
+    .ch-header {
+      background: #111827; padding: 16px 18px;
+      display: flex; align-items: center; justify-content: space-between;
+      border-bottom: 1px solid rgba(255,255,255,0.07); flex-shrink: 0;
+    }
+    .ch-header-left { display: flex; align-items: center; gap: 10px; }
+    .ch-icon {
+      width: 38px; height: 38px;
+      background: linear-gradient(135deg,#f59e0b,#d97706);
+      border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.1rem;
+    }
+    .ch-title { font-weight: 800; font-size: 1rem; color: #fff; }
+    .ch-sub { font-size: 0.66rem; color: #64748b; margin-top: 1px; }
+    .ch-close {
+      width: 30px; height: 30px; border-radius: 50%;
+      background: rgba(255,255,255,0.07); border: none; color: #94a3b8;
+      font-size: 0.9rem; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .ch-close:hover { background: rgba(255,255,255,0.14); }
+    .ch-body { flex: 1; overflow-y: auto; padding: 18px 16px 24px; display: flex; flex-direction: column; gap: 16px; }
+    .ch-body::-webkit-scrollbar { width: 0; }
+
+    /* Streak */
+    .streak-bar {
+      background: linear-gradient(135deg,#1c1000,#2d1a00);
+      border: 1px solid rgba(245,158,11,0.25); border-radius: 16px;
+      padding: 14px 16px; display: flex; align-items: center; gap: 14px;
+    }
+    .streak-flame { font-size: 2rem; line-height: 1; }
+    .streak-count { font-size: 1.5rem; font-weight: 900; color: #f59e0b; line-height: 1; }
+    .streak-label { font-size: 0.7rem; color: #a16207; margin-top: 2px; font-wei, ,,ght: 600; }
+    .streak-days { display: flex; gap: 5px; margin-top: 8px; }
+    .streak-day {
+      width: 24px; height: 24px; border-radius: 6px;
+      background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.58rem; color: #475569; font-weight: 700;
+    }
+    .streak-day.done { background: #f59e0b; border-color: #f59e0b; color: #1c1000; }
+    .streak-day.today { border-color: #f59e0b; color: #f59e0b; }
+
+    /* Section label */
+    .ch-label { font-size: 0.68rem; font-weight: 700; color: #475569; text-transform: uppercase; letter-spacing: 0.8px; }
+
+    /* Daily card */
+    .daily-card {
+      background: linear-gradient(135deg,#1e3a5f,#162040);
+      border: 1px solid rgba(79,142,247,0.2); border-radius: 18px; padding: 18px;
+      cursor: pointer; transition: transform 0.18s;
+    }
+    .daily-card:hover { transform: translateY(-2px); }
+    .daily-card-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+    .daily-badge {
+      background: #4f8ef7; color: #fff; font-size: 0.6rem; font-weight: 700;
+      padding: 3px 9px; border-radius: 20px; letter-spacing: 0.4px;
+    }
+    .daily-done-badge {
+      background: #22c55e; color: #fff; font-size: 0.6rem; font-weight: 700;
+      padding: 3px 9px; border-radius: 20px;
+    }
+    .daily-subject { font-size: 0.68rem; color: #7eb8ff; font-weight: 600; }
+    .daily-question { font-size: 0.88rem; color: #e2e8f0; line-height: 1.5; margin-bottom: 12px; }
+    .daily-meta { font-size: 0.68rem; color: #475569; }
+    .daily-attempt-btn {
+      width: 100%; padding: 11px; background: #4f8ef7; border: none; border-radius: 12px;
+      color: #fff; font-size: 0.85rem; font-weight: 700; font-family: inherit; cursor: pointer;
+      margin-top: 12px; transition: background 0.15s;
+    }
+    .daily-attempt-btn:hover { background: #3a7de8; }
+    .daily-attempt-btn:disabled { background: #1e3a5f; color: #475569; cursor: not-allowed; }
+
+    /* Subject battles */
+    .battles-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .battle-card {
+      border-radius: 16px; padding: 14px 12px; cursor: pointer;
+      transition: transform 0.15s, box-shadow 0.15s; border: 1px solid rgba(255,255,255,0.06);
+    }
+    .battle-card:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.3); }
+    .battle-icon { font-size: 1.4rem; margin-bottom: 6px; }
+    .battle-name { font-size: 0.8rem; font-weight: 700; color: #fff; }
+    .battle-count { font-size: 0.65rem; color: rgba(255,255,255,0.5); margin-top: 2px; }
+    .battle-played { font-size: 0.65rem; font-weight: 600; color: #22c55e; margin-top: 4px; }
+
+    /* Leaderboard */
+    .leaderboard { display: flex; flex-direction: column; gap: 8px; }
+    .lb-row {
+      background: #111827; border-radius: 14px; padding: 12px 14px;
+      display: flex; align-items: center; gap: 12px;
+      border: 1px solid rgba(255,255,255,0.05);
+    }
+    .lb-row.me { border-color: rgba(79,142,247,0.4); background: rgba(79,142,247,0.08); }
+    .lb-rank { font-size: 0.75rem; font-weight: 800; color: #475569; width: 20px; text-align: center; }
+    .lb-rank.gold { color: #f59e0b; }
+    .lb-rank.silver { color: #94a3b8; }
+    .lb-rank.bronze { color: #cd7c3a; }
+    .lb-avatar {
+      width: 32px; height: 32px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 700; font-size: 0.8rem; color: #fff; flex-shrink: 0;
+    }
+    .lb-name { flex: 1; font-size: 0.82rem; font-weight: 600; color: #e2e8f0; }
+    .lb-score { font-size: 0.78rem; font-weight: 700; color: #4f8ef7; }
+    .lb-streak { font-size: 0.65rem; color: #f59e0b; }
+
+    /* Challenge friend */
+    .friend-card {
+      background: linear-gradient(135deg,#12162a,#1a1f3a);
+      border: 1px solid rgba(124,58,237,0.25); border-radius: 18px; padding: 16px;
+    }
+    .friend-title { font-size: 0.9rem; font-weight: 800; color: #fff; margin-bottom: 4px; }
+    .friend-sub { font-size: 0.75rem; color: #64748b; margin-bottom: 14px; line-height: 1.4; }
+    .friend-btns { display: flex; gap: 8px; }
+    .friend-btn {
+      flex: 1; padding: 10px; border: none; border-radius: 12px;
+      font-size: 0.8rem; font-weight: 700; font-family: inherit; cursor: pointer; transition: opacity 0.15s;
+    }
+    .friend-btn.gen { background: linear-gradient(135deg,#7c3aed,#4f8ef7); color: #fff; }
+    .friend-btn.join { background: rgba(255,255,255,0.07); color: #94a3b8; border: 1px solid rgba(255,255,255,0.1); }
+    .friend-btn:hover { opacity: 0.85; }
+    .friend-code-display {
+      background: #0b1120; border: 1px dashed rgba(124,58,237,0.4); border-radius: 10px;
+      padding: 10px; text-align: center; margin-top: 10px; display: none;
+    }
+    .friend-code { font-size: 1.3rem; font-weight: 900; color: #a78bfa; letter-spacing: 4px; }
+    .friend-code-hint { font-size: 0.65rem; color: #475569; margin-top: 3px; }
+
+    /* ── QUIZ SCREEN ── */
+    .quiz-screen { display: none; flex-direction: column; height: 100%; }
+    .quiz-screen.active { display: flex; }
+    .challenge-dialog.quiz-mode .ch-body { display: none; }
+    .quiz-top {
+      background: #111827; padding: 14px 18px;
+      border-bottom: 1px solid rgba(255,255,255,0.07); flex-shrink: 0;
+    }
+    .quiz-meta { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+    .quiz-subject { font-size: 0.7rem; font-weight: 700; color: #4f8ef7; text-transform: uppercase; }
+    .quiz-timer { font-size: 0.9rem; font-weight: 800; color: #f59e0b; }
+    .quiz-progress-bar { height: 4px; background: rgba(255,255,255,0.08); border-radius: 99px; overflow: hidden; }
+    .quiz-progress-fill { height: 100%; background: linear-gradient(90deg,#4f8ef7,#7c3aed); border-radius: 99px; transition: width 0.3s; }
+    .quiz-qnum { font-size: 0.65rem; color: #475569; margin-top: 5px; }
+    .quiz-content { flex: 1; overflow-y: auto; padding: 18px 16px; }
+    .quiz-content::-webkit-scrollbar { width: 0; }
+    .quiz-question { font-size: 0.9rem; color: #e2e8f0; line-height: 1.6; margin-bottom: 18px; font-weight: 500; }
+    .quiz-options { display: flex; flex-direction: column; gap: 10px; }
+    .quiz-option {
+      background: #111827; border: 1.5px solid rgba(255,255,255,0.08); border-radius: 14px;
+      padding: 13px 16px; color: #cbd5e1; font-size: 0.85rem; cursor: pointer;
+      transition: all 0.18s; font-family: inherit; text-align: left;
+    }
+    .quiz-option:hover:not(:disabled) { border-color: #4f8ef7; background: rgba(79,142,247,0.08); color: #fff; }
+    .quiz-option.correct { background: rgba(34,197,94,0.15); border-color: #22c55e; color: #86efac; }
+    .quiz-option.wrong { background: rgba(239,68,68,0.12); border-color: #ef4444; color: #fca5a5; }
+    .quiz-option:disabled { cursor: not-allowed; }
+    .quiz-explanation {
+      margin-top: 14px; padding: 12px 14px;
+      background: rgba(79,142,247,0.08); border: 1px solid rgba(79,142,247,0.2);
+      border-radius: 12px; font-size: 0.78rem; color: #93c5fd; line-height: 1.5; display: none;
+    }
+    .quiz-next-btn {
+      width: 100%; padding: 13px; background: #4f8ef7; border: none; border-radius: 14px;
+      color: #fff; font-size: 0.88rem; font-weight: 700; font-family: inherit; cursor: pointer;
+      margin-top: 14px; display: none; transition: background 0.15s;
+    }
+    .quiz-next-btn:hover { background: #3a7de8; }
+
+    /* Result screen */
+    .quiz-result {
+      flex: 1; display: flex; flex-direction: column; align-items: center;
+      justify-content: center; padding: 24px; text-align: center; gap: 10px;
+    }
+    .result-trophy { font-size: 3rem; }
+    .result-score { font-size: 2.2rem; font-weight: 900; color: #fff; }
+    .result-label { font-size: 0.85rem; color: #64748b; }
+    .result-rank { font-size: 0.8rem; color: #f59e0b; font-weight: 700; margin-top: 4px; }
+    .result-btns { display: flex; gap: 10px; margin-top: 16px; width: 100%; }
+    .result-btn {
+      flex: 1; padding: 12px; border: none; border-radius: 14px;
+      font-size: 0.85rem; font-weight: 700; font-family: inherit; cursor: pointer;
+    }
+    .result-btn.primary { background: #4f8ef7; color: #fff; }
+    .result-btn.secondary { background: rgba(255,255,255,0.07); color: #94a3b8; border: 1px solid rgba(255,255,255,0.1); }
+
+    /* ── AUTH TRACK STEP ── */
+    .auth-track-btn {
+      width: 100%; padding: 13px 16px;
+      border: 2px solid transparent; border-radius: 14px;
+      font-size: 0.95rem; font-weight: 700; font-family: inherit;
+      cursor: pointer; text-align: left;
+      transition: transform 0.15s, box-shadow 0.15s;
+    }
+    .auth-track-btn:hover { transform: translateX(4px); box-shadow: 0 4px 16px rgba(0,0,0,0.1); }
+    .auth-track-btn.science  { background:#eef4ff; color:#1e3a5f; border-color:#c7deff; }
+    .auth-track-btn.arts     { background:#fdf4ff; color:#5b1d6e; border-color:#e9c6f7; }
+    .auth-track-btn.social   { background:#f0fdf4; color:#145228; border-color:#bbf7d0; }
+
+    /* ── TRACK SELECTION SCREEN ── */
+    .track-screen {
+      position: absolute; inset: 0;
+      background: #0b1120;
+      border-radius: 24px 24px 0 0;
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 32px 24px;
+      gap: 20px;
+      z-index: 10;
+    }
+    .track-title {
+      font-size: 1.3rem; font-weight: 900; color: #fff; text-align: center;
+    }
+    .track-subtitle {
+      font-size: 0.8rem; color: #475569; text-align: center; margin-top: -12px; line-height: 1.5;
+    }
+    .track-cards { display: flex; flex-direction: column; gap: 12px; width: 100%; }
+    .track-card {
+      border-radius: 18px; padding: 18px 20px;
+      display: flex; align-items: center; gap: 16px;
+      cursor: pointer; border: 2px solid rgba(255,255,255,0.07);
+      transition: transform 0.18s, border-color 0.18s;
+    }
+    .track-card:hover { transform: translateX(4px); }
+    .track-card.science  { background: linear-gradient(135deg,#1e3a5f,#0b1120); border-color: rgba(79,142,247,0.35); }
+    .track-card.arts     { background: linear-gradient(135deg,#2a1a2a,#0b1120); border-color: rgba(232,121,249,0.35); }
+    .track-card.commercial { background: linear-gradient(135deg,#1a2a10,#0b1120); border-color: rgba(74,222,128,0.35); }
+    .track-icon { font-size: 2rem; flex-shrink: 0; }
+    .track-info-name { font-size: 1rem; font-weight: 800; color: #fff; }
+    .track-info-subs { font-size: 0.7rem; color: #64748b; margin-top: 3px; }
+    .track-change-btn {
+      background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
+      color: #64748b; font-size: 0.7rem; font-weight: 600; font-family: inherit;
+      padding: 5px 12px; border-radius: 20px; cursor: pointer; transition: background 0.15s;
+    }
+    .track-change-btn:hover { background: rgba(255,255,255,0.1); color: #94a3b8; }
+
   </style>
 </head>
 <body>
@@ -958,7 +1241,7 @@
   <!-- AUTH GATE OVERLAY -->
   <div id="auth-overlay">
     <div class="auth-dialog">
-      <button class="dialog-close" onclick="closeAuthDialog()">✕</button>
+      <button class="dialog-close" id="dialog-close-btn" onclick="closeAuthDialog()">✕</button>
       <div class="brand">Open<span>CBT</span></div>
       <div class="tagline">Sign in to access Nigeria's #1 exam platform</div>
 
@@ -984,6 +1267,43 @@
         <div class="auth-error" id="signup-error"></div>
         <button class="auth-btn" onclick="doSignup()">Create Account</button>
         <div class="auth-divider">Already have an account? <b style="color:#4f8ef7;cursor:pointer;" onclick="switchTab('login')">Login</b></div>
+      </div>
+
+      <!-- OTP STEP -->
+      <div id="otp-form" style="display:none;">
+        <div style="text-align:center;font-size:1.1rem;font-weight:800;color:#0b1120;margin-bottom:4px;">Check your email 📬</div>
+        <div id="otp-hint" style="text-align:center;font-size:0.78rem;color:#64748b;margin-bottom:18px;"></div>
+        <input class="auth-input" id="otp-input" type="number" placeholder="0 0 0 0 0 0"
+          style="text-align:center;font-size:1.4rem;letter-spacing:8px;font-weight:800;" maxlength="6" />
+        <div class="auth-error" id="otp-error"></div>
+        <button class="auth-btn" onclick="verifyOtp()">Verify & Continue</button>
+        <div class="auth-divider"><span style="color:#4f8ef7;font-weight:600;cursor:pointer;" onclick="resendOtp()">Resend code</span> &nbsp;·&nbsp; <span style="cursor:pointer;" onclick="switchTab('signup')">← Back</span></div>
+      </div>
+
+      <!-- TRACK STEP (shown after signup) -->
+      <div id="auth-track-step" style="display:none;">
+        <div id="auth-track-greeting" style="font-size:1.1rem;font-weight:800;color:#0b1120;text-align:center;margin-bottom:4px;"></div>
+        <div style="font-size:0.78rem;color:#94a3b8;text-align:center;margin-bottom:18px;line-height:1.5;">What's your school track?<br/>We'll personalise your challenges.</div>
+        <div style="display:flex;flex-direction:column;gap:10px;">
+          <button class="auth-track-btn science" onclick="pickTrackOnSignup('science')">🔬 Science</button>
+          <button class="auth-track-btn arts"    onclick="pickTrackOnSignup('arts')">🎨 Arts</button>
+          <button class="auth-track-btn social"  onclick="pickTrackOnSignup('social')">📊 Social Science</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- LOGOUT MODAL -->
+  <div id="logout-overlay" class="hidden">
+    <div class="auth-dialog logout-dialog">
+      <button class="dialog-close" onclick="closeLogoutDialog()">✕</button>
+      <div class="logout-avatar" id="logout-avatar"></div>
+      <div class="brand">Open<span>CBT</span></div>
+      <div class="tagline" id="logout-tagline">Logged in as —</div>
+      <div style="display:flex;flex-direction:column;gap:10px;margin-top:8px;">
+        <button class="auth-btn logout-confirm-btn" onclick="confirmLogout()">Log Out</button>
+        <button class="auth-btn" style="background:#f0f4ff;color:#0b1120;" onclick="closeLogoutDialog()">Cancel</button>
       </div>
     </div>
   </div>
@@ -1094,7 +1414,7 @@
       </svg>
       Home
     </div>
-    <div class="nav-item">
+    <div class="nav-item" onclick="openChallenge()">
       <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
         <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
       </svg>
@@ -1116,40 +1436,57 @@
   </nav>
 
   <script>
-    /* ── Simple localStorage auth ── */
-    const USERS_KEY = 'opencbt_users';
-    const SESSION_KEY = 'opencbt_session';
+    /* ════════════════════════════════════════
+       GAS BACKEND
+    ════════════════════════════════════════ */
+    const GAS_URL = 'https://script.google.com/macros/s/AKfycbw3Xh_TYSiESkLvNcVT_fzTjw9Ga_Jr-B0XBalYdrDeAQ1gNsmMkMUHfkT4jZ8lSPPN/exec';
+    let userIP = 'unknown';
 
-    function getUsers() {
-      return JSON.parse(localStorage.getItem(USERS_KEY) || '{}');
+    fetch('https://api.ipify.org?format=json')
+      .then(r => r.json()).then(d => { userIP = d.ip; }).catch(() => {});
+
+    async function callGAS(action, data = {}) {
+      const token = localStorage.getItem('opencbt_token') || '';
+      const res = await fetch(GAS_URL, {
+        method: 'POST',
+        body: JSON.stringify({ action, ip: userIP, token, ...data })
+      });
+      return res.json();
     }
-    function saveUsers(u) {
-      localStorage.setItem(USERS_KEY, JSON.stringify(u));
-    }
-    function getSession() {
-      return localStorage.getItem(SESSION_KEY);
-    }
-    function setSession(email) {
-      localStorage.setItem(SESSION_KEY, email);
-    }
-    function clearSession() {
-      localStorage.removeItem(SESSION_KEY);
+
+    /* ── Session helpers ── */
+    function getSession()  { return localStorage.getItem('opencbt_token'); }
+    function getUser()     { return JSON.parse(localStorage.getItem('opencbt_user') || 'null'); }
+    function clearSession(){ localStorage.removeItem('opencbt_token'); localStorage.removeItem('opencbt_user'); }
+
+    /* ── Track ── */
+    function getUserTrack() { return getUser()?.track || localStorage.getItem('ch_track') || null; }
+    function setUserTrack(t) {
+      localStorage.setItem('ch_track', t);
+      const u = getUser();
+      if (u) { u.track = t; localStorage.setItem('opencbt_user', JSON.stringify(u)); }
+      if (getSession()) callGAS('setTrack', { track: t });
     }
 
     /* ── On page load ── */
     window.addEventListener('DOMContentLoaded', () => {
-      if (getSession()) {
-        unlockApp();
-      }
+      if (getSession()) unlockApp();
     });
 
+    /* ── Unlock app ── */
     function unlockApp() {
       document.getElementById('auth-overlay').classList.add('hidden');
-      const email = getSession();
-      const users = getUsers();
-      const name = users[email]?.name || email;
-      const initial = name.charAt(0).toUpperCase();
-      // Update profile nav to show avatar
+      document.getElementById('otp-form').style.display = 'none';
+      document.getElementById('signup-form').classList.remove('hidden');
+      document.getElementById('auth-track-step').style.display = 'none';
+      document.querySelector('.auth-dialog .brand').style.display = '';
+      document.querySelector('.auth-dialog .tagline').style.display = '';
+      document.querySelector('.auth-tabs').style.display = '';
+      document.getElementById('dialog-close-btn').style.display = '';
+
+      const user = getUser();
+      const name = user?.name || '';
+      const initial = name.charAt(0).toUpperCase() || '?';
       const nav = document.getElementById('profile-nav');
       nav.innerHTML = `<div class="user-avatar" onclick="onProfileClick()">${initial}</div><span style="font-size:0.65rem;font-weight:600;color:#4f8ef7;">${name.split(' ')[0]}</span>`;
     }
@@ -1157,62 +1494,125 @@
     /* ── Tab switch ── */
     function switchTab(tab) {
       document.querySelectorAll('.auth-tab').forEach((t,i) => {
-        t.classList.toggle('active', (i===0 && tab==='login') || (i===1 && tab==='signup'));
+        t.classList.toggle('active', (i===0&&tab==='login')||(i===1&&tab==='signup'));
       });
-      document.getElementById('login-form').classList.toggle('hidden', tab !== 'login');
-      document.getElementById('signup-form').classList.toggle('hidden', tab !== 'signup');
+      document.getElementById('login-form').classList.toggle('hidden', tab!=='login');
+      document.getElementById('signup-form').classList.toggle('hidden', tab!=='signup');
+      document.getElementById('otp-form').style.display = 'none';
       document.getElementById('login-error').textContent = '';
       document.getElementById('signup-error').textContent = '';
     }
 
     /* ── Login ── */
-    function doLogin() {
-      const email = document.getElementById('login-email').value.trim().toLowerCase();
-      const pass  = document.getElementById('login-password').value;
-      const err   = document.getElementById('login-error');
-      if (!email || !pass) { err.textContent = 'Please fill in all fields.'; return; }
-      const users = getUsers();
-      if (!users[email]) { err.textContent = 'Account not found. Sign up first.'; return; }
-      if (users[email].password !== btoa(pass)) { err.textContent = 'Wrong password. Try again.'; return; }
-      setSession(email);
+    async function doLogin() {
+      const email    = document.getElementById('login-email').value.trim().toLowerCase();
+      const password = document.getElementById('login-password').value;
+      const errEl    = document.getElementById('login-error');
+      if (!email || !password) { errEl.textContent = 'Please fill all fields.'; return; }
+
+      const btn = document.querySelector('#login-form .auth-btn');
+      btn.textContent = 'Logging in...'; btn.disabled = true;
+      const res = await callGAS('login', { email, password });
+      btn.textContent = 'Login'; btn.disabled = false;
+
+      if (!res.success) { errEl.textContent = res.error; return; }
+      localStorage.setItem('opencbt_token', res.token);
+      localStorage.setItem('opencbt_user', JSON.stringify({ name:res.name, email:res.email, track:res.track, subscription_plan:res.subscription_plan }));
+      if (res.track) localStorage.setItem('ch_track', res.track);
       unlockApp();
     }
 
-    /* ── Sign Up ── */
-    function doSignup() {
-      const name  = document.getElementById('signup-name').value.trim();
-      const email = document.getElementById('signup-email').value.trim().toLowerCase();
-      const pass  = document.getElementById('signup-password').value;
-      const err   = document.getElementById('signup-error');
-      if (!name || !email || !pass) { err.textContent = 'Please fill in all fields.'; return; }
-      if (!/\S+@\S+\.\S+/.test(email)) { err.textContent = 'Enter a valid email.'; return; }
-      if (pass.length < 6) { err.textContent = 'Password must be at least 6 characters.'; return; }
-      const users = getUsers();
-      if (users[email]) { err.textContent = 'Email already registered. Login instead.'; return; }
-      users[email] = { name, password: btoa(pass) };
-      saveUsers(users);
-      setSession(email);
+    /* ── Sign Up Step 1: send OTP ── */
+    async function doSignup() {
+      const name     = document.getElementById('signup-name').value.trim();
+      const email    = document.getElementById('signup-email').value.trim().toLowerCase();
+      const password = document.getElementById('signup-password').value;
+      const errEl    = document.getElementById('signup-error');
+      if (!name||!email||!password) { errEl.textContent='Fill all fields.'; return; }
+      if (!/\S+@\S+\.\S+/.test(email)) { errEl.textContent='Enter a valid email.'; return; }
+      if (password.length < 6) { errEl.textContent='Password min 6 characters.'; return; }
+
+      const btn = document.querySelector('#signup-form .auth-btn');
+      btn.textContent='Sending OTP...'; btn.disabled=true; errEl.textContent='';
+      const res = await callGAS('sendOtp', { name, email, password });
+      btn.textContent='Create Account'; btn.disabled=false;
+
+      if (!res.success) { errEl.textContent=res.error; return; }
+      window._pendingSignup = { name, email, password };
+      document.getElementById('signup-form').classList.add('hidden');
+      document.getElementById('otp-hint').textContent = 'Code sent to ' + email;
+      document.getElementById('otp-form').style.display = 'block';
+    }
+
+    /* ── Sign Up Step 2: verify OTP ── */
+    async function verifyOtp() {
+      const otp   = document.getElementById('otp-input').value.trim();
+      const errEl = document.getElementById('otp-error');
+      const { name, email, password } = window._pendingSignup || {};
+      if (!otp||otp.length<6) { errEl.textContent='Enter the 6-digit code.'; return; }
+
+      const btn = document.querySelector('#otp-form .auth-btn');
+      btn.textContent='Verifying...'; btn.disabled=true; errEl.textContent='';
+      const res = await callGAS('verifyOtp', { name, email, password, otp, track: getUserTrack()||'' });
+      btn.textContent='Verify & Continue'; btn.disabled=false;
+
+      if (!res.success) { errEl.textContent=res.error; return; }
+      localStorage.setItem('opencbt_token', res.token);
+      localStorage.setItem('opencbt_user', JSON.stringify({ name:res.name, email:res.email, track:res.track||'' }));
+      if (!res.track) { showAuthTrackStep(res.name); } else { unlockApp(); }
+    }
+
+    async function resendOtp() {
+      if (!window._pendingSignup) return;
+      const { name, email, password } = window._pendingSignup;
+      document.getElementById('otp-error').textContent = 'Resending...';
+      const res = await callGAS('sendOtp', { name, email, password });
+      document.getElementById('otp-error').textContent = res.success ? '✅ New code sent!' : res.error;
+    }
+
+    /* ── Track step (post-signup) ── */
+    function showAuthTrackStep(name) {
+      document.querySelector('.auth-dialog .brand').style.display = 'none';
+      document.querySelector('.auth-dialog .tagline').style.display = 'none';
+      document.querySelector('.auth-tabs').style.display = 'none';
+      document.getElementById('login-form').classList.add('hidden');
+      document.getElementById('signup-form').classList.add('hidden');
+      document.getElementById('otp-form').style.display = 'none';
+      document.getElementById('dialog-close-btn').style.display = 'none';
+      document.getElementById('auth-track-step').style.display = 'block';
+      document.getElementById('auth-track-greeting').textContent = 'Welcome, ' + (name||'').split(' ')[0] + '! 🎉';
+    }
+
+    function pickTrackOnSignup(t) {
+      setUserTrack(t);
+      document.querySelector('.auth-dialog .brand').style.display = '';
+      document.querySelector('.auth-dialog .tagline').style.display = '';
+      document.querySelector('.auth-tabs').style.display = '';
+      document.getElementById('auth-track-step').style.display = 'none';
+      document.getElementById('dialog-close-btn').style.display = '';
       unlockApp();
     }
 
-    /* ── Close dialog without signing in ── */
+    /* ── Close auth dialog ── */
     function closeAuthDialog() {
       document.getElementById('auth-overlay').classList.add('hidden');
     }
 
-    /* ── Profile nav click ── */
+    /* ── Profile nav ── */
     function onProfileClick() {
       if (getSession()) {
-        // Show logout option
-        const name = getUsers()[getSession()]?.name || getSession();
-        if (confirm(`Logged in as ${name}\n\nDo you want to log out?`)) {
-          clearSession();
-          location.reload();
-        }
+        const user = getUser();
+        const name = user?.name || '';
+        document.getElementById('logout-avatar').textContent = name.charAt(0).toUpperCase();
+        document.getElementById('logout-tagline').textContent = 'Logged in as ' + name;
+        document.getElementById('logout-overlay').classList.remove('hidden');
       } else {
         document.getElementById('auth-overlay').classList.remove('hidden');
       }
     }
+
+    function closeLogoutDialog() { document.getElementById('logout-overlay').classList.add('hidden'); }
+    function confirmLogout() { clearSession(); localStorage.removeItem('ch_track'); location.reload(); }
 
     /* ── Gated app open ── */
     function gatedOpen(url) {
@@ -1317,31 +1717,8 @@
       showTyping();
 
       try {
-        const response = await fetch('https://api.anthropic.com/v1/messages', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            model: 'claude-sonnet-4-20250514',
-            max_tokens: 1000,
-            system: `You are ExamGPT, a friendly and expert AI tutor specializing in Nigerian secondary school and university entrance exams — specifically WAEC (SSCE), JAMB (UTME), and NECO. 
-
-Your job is to help students understand topics, solve past questions, and prepare effectively.
-
-Guidelines:
-- Keep responses concise and easy to understand for Nigerian students
-- Use relatable Nigerian examples where possible
-- For maths and sciences, show step-by-step working
-- For theory subjects, give clear bullet-point summaries
-- When giving past questions, indicate the exam and year if known
-- Be encouraging and motivating
-- Format answers cleanly — use bullet points, numbered steps, or short paragraphs as needed
-- Do NOT use markdown headers (##) — keep it plain and readable in a chat`,
-            messages: examGPTHistory
-          })
-        });
-
-        const data = await response.json();
-        const reply = data.content?.find(b => b.type === 'text')?.text || 'Sorry, I had trouble responding. Please try again.';
+        const res = await callGAS('askAI', { message: text, conversation_history: examGPTHistory.slice(-10) });
+        const reply = res.success ? res.reply : (res.error || 'Sorry, I had trouble responding. Please try again.');
 
         removeTyping();
         appendMessage('ai', reply);
@@ -1355,6 +1732,11 @@ Guidelines:
       examGPTTyping = false;
       document.getElementById('examgpt-send-btn').disabled = false;
     }
+
+    // Close logout on backdrop click
+    document.getElementById('logout-overlay')?.addEventListener('click', function(e) {
+      if (e.target === this) closeLogoutDialog();
+    });
 
     // Close on backdrop click
     document.getElementById('examgpt-overlay')?.addEventListener('click', function(e) {
@@ -1404,7 +1786,629 @@ Guidelines:
       clearTimeout(toastTimer);
       toastTimer = setTimeout(() => t.classList.remove('show'), 3000);
     }
+
+    /* ══════════════════════════════
+       CHALLENGE ARENA
+    ══════════════════════════════ */
+
+    // ── TRACK DEFINITIONS ──
+    const TRACK_SUBJECTS = {
+      science: ['maths','english','biology','physics','chemistry','government'],
+      arts:    ['english','literature','government','history','economics','geography'],
+      social:  ['english','maths','economics','commerce','accounting','government'],
+    };
+
+    const ALL_SUBJECTS = [
+      { id:'maths',      name:'Mathematics', icon:'📐', color:'#1e3a5f', accent:'#4f8ef7' },
+      { id:'english',    name:'English',     icon:'📝', color:'#1a2e1a', accent:'#22c55e' },
+      { id:'biology',    name:'Biology',     icon:'🧬', color:'#2d1a3a', accent:'#a78bfa' },
+      { id:'physics',    name:'Physics',     icon:'⚛️',  color:'#1e2a1a', accent:'#34d399' },
+      { id:'chemistry',  name:'Chemistry',   icon:'🧪', color:'#2a1a1a', accent:'#f87171' },
+      { id:'government', name:'Government',  icon:'🏛️', color:'#1a2020', accent:'#fbbf24' },
+      { id:'literature', name:'Literature',  icon:'📖', color:'#2a1a2a', accent:'#e879f9' },
+      { id:'history',    name:'Hist./CRK',   icon:'✝️',  color:'#1a1a2a', accent:'#818cf8' },
+      { id:'economics',  name:'Economics',   icon:'📊', color:'#1a2a1a', accent:'#4ade80' },
+      { id:'geography',  name:'Geography',   icon:'🌍', color:'#1a2020', accent:'#38bdf8' },
+      { id:'commerce',   name:'Commerce',    icon:'🛒', color:'#2a1a10', accent:'#fb923c' },
+      { id:'accounting', name:'Accounting',  icon:'🧾', color:'#1a1a1a', accent:'#94a3b8' },
+    ];
+
+    function getUserTrack() { return localStorage.getItem('ch_track') || null; }
+    function setUserTrack(t) { localStorage.setItem('ch_track', t); }
+    function getTrackSubjects() {
+      const t = getUserTrack() || 'science';
+      return ALL_SUBJECTS.filter(s => TRACK_SUBJECTS[t].includes(s.id));
+    }
+    // Keep legacy SUBJECTS reference so nothing else breaks
+    function getSubjects() { return getTrackSubjects(); }
+
+    const QUESTION_BANK = {
+      maths: [
+        { q:'If 2x + 3 = 11, find x.', opts:['3','4','5','6'], ans:1, exp:'2x = 11-3 = 8, so x = 4' },
+        { q:'What is the value of log₁₀ 1000?', opts:['2','3','4','10'], ans:1, exp:'log₁₀ 1000 = log₁₀ 10³ = 3' },
+        { q:'Find the simple interest on ₦5000 at 4% per annum for 3 years.', opts:['₦200','₦400','₦600','₦800'], ans:2, exp:'SI = (5000×4×3)/100 = ₦600' },
+        { q:'Solve: 3² + 4² = x². Find x.', opts:['5','7','25','6'], ans:0, exp:'9 + 16 = 25, so x = √25 = 5 (Pythagoras)' },
+        { q:'What is 15% of 200?', opts:['25','30','35','40'], ans:1, exp:'15/100 × 200 = 30' },
+        { q:'If a = 3, b = 4, find √(a² + b²).', opts:['5','7','6','25'], ans:0, exp:'√(9+16) = √25 = 5' },
+        { q:'A train travels 120km in 2 hours. What is its speed?', opts:['50km/h','60km/h','70km/h','80km/h'], ans:1, exp:'Speed = 120/2 = 60km/h' },
+      ],
+      english: [
+        { q:'Choose the word closest in meaning to "Benevolent".', opts:['Cruel','Kind','Strict','Lazy'], ans:1, exp:'Benevolent means kind or generous.' },
+        { q:"Identify the correct sentence.", opts:["She doesn't know","He go to school","They are coming","We was there"], ans:2, exp:"\"They are coming\" is grammatically correct." },
+        { q:'The word "Ephemeral" means:', opts:['Lasting forever','Short-lived','Very large','Extremely bright'], ans:1, exp:'Ephemeral means lasting for a very short time.' },
+        { q:'Choose the antonym of "Loquacious".', opts:['Talkative','Quiet','Loud','Energetic'], ans:1, exp:'Loquacious means very talkative, so the antonym is quiet/taciturn.' },
+        { q:'"The baby slept like a log." This is an example of:', opts:['Metaphor','Simile','Hyperbole','Alliteration'], ans:1, exp:'It uses "like" to compare, making it a simile.' },
+        { q:'Which of these is a conjunction?', opts:['Quickly','Beautiful','Although','Desk'], ans:2, exp:'"Although" is a subordinating conjunction.' },
+      ],
+      biology: [
+        { q:'Which organelle is known as the powerhouse of the cell?', opts:['Nucleus','Ribosome','Mitochondria','Vacuole'], ans:2, exp:'Mitochondria produce ATP through cellular respiration — the cell\'s energy currency.' },
+        { q:'What is the process by which plants make food?', opts:['Respiration','Photosynthesis','Transpiration','Digestion'], ans:1, exp:'Photosynthesis uses sunlight, CO₂ and water to produce glucose.' },
+        { q:'DNA stands for:', opts:['Deoxyribonucleic Acid','Diribonucleic Acid','Deoxyribonicotinic Acid','None'], ans:0, exp:'DNA = Deoxyribonucleic Acid — the molecule carrying genetic info.' },
+        { q:'Which blood group is the universal donor?', opts:['A','B','AB','O'], ans:3, exp:'Blood group O negative can donate to all blood types.' },
+        { q:'How many chromosomes does a normal human cell have?', opts:['23','44','46','48'], ans:2, exp:'Humans have 46 chromosomes (23 pairs) in somatic cells.' },
+        { q:'Which part of the plant absorbs water from the soil?', opts:['Leaves','Stem','Root hair','Flowers'], ans:2, exp:'Root hairs increase surface area for water and mineral absorption.' },
+      ],
+      physics: [
+        { q:'What is the SI unit of force?', opts:['Watt','Joule','Newton','Pascal'], ans:2, exp:'Force is measured in Newtons (N). F = ma.' },
+        { q:'Light travels at approximately:', opts:['3×10⁶ m/s','3×10⁸ m/s','3×10¹⁰ m/s','300 m/s'], ans:1, exp:'Speed of light ≈ 3×10⁸ m/s in a vacuum.' },
+        { q:'Which of these is NOT a vector quantity?', opts:['Velocity','Force','Speed','Displacement'], ans:2, exp:'Speed has magnitude only (no direction), making it a scalar.' },
+        { q:'Ohm\'s Law states that V = ?', opts:['I/R','IR','I+R','I-R'], ans:1, exp:'V = IR where V=voltage, I=current, R=resistance.' },
+        { q:'A body at rest will remain at rest unless acted upon by an external force. This is Newton\'s:', opts:['Second Law','Third Law','First Law','Law of Gravity'], ans:2, exp:'Newton\'s First Law (Law of Inertia).' },
+      ],
+      chemistry: [
+        { q:'What is the chemical symbol for Gold?', opts:['Go','Gd','Au','Ag'], ans:2, exp:'Au comes from the Latin word "Aurum" meaning gold.' },
+        { q:'The pH of a neutral solution is:', opts:['0','7','14','1'], ans:1, exp:'pH 7 is neutral. Below 7 = acidic, above 7 = basic.' },
+        { q:'Which gas is produced when zinc reacts with dilute HCl?', opts:['Oxygen','Carbon dioxide','Hydrogen','Nitrogen'], ans:2, exp:'Zn + 2HCl → ZnCl₂ + H₂ (Hydrogen gas).' },
+        { q:'The atomic number of Carbon is:', opts:['6','12','14','8'], ans:0, exp:'Carbon has 6 protons, so atomic number = 6. Mass number = 12.' },
+        { q:'What type of bond holds NaCl together?', opts:['Covalent','Ionic','Metallic','Hydrogen'], ans:1, exp:'NaCl is held by ionic bonds (Na⁺ and Cl⁻ ions).' },
+      ],
+      government: [
+        { q:'Who was Nigeria\'s first President?', opts:['Tafawa Balewa','Nnamdi Azikiwe','Obafemi Awolowo','Aguiyi-Ironsi'], ans:1, exp:'Dr. Nnamdi Azikiwe became Nigeria\'s first President on October 1, 1963.' },
+        { q:'The principle of separation of powers was propounded by:', opts:['John Locke','Karl Marx','Montesquieu','Rousseau'], ans:2, exp:'Baron de Montesquieu proposed separation of powers in "The Spirit of Laws" (1748).' },
+        { q:'In a federal system, sovereignty is:', opts:['With the President','Divided between central and state govts','With the judiciary','Only with the states'], ans:1, exp:'Federalism divides power between the central government and constituent units.' },
+        { q:'ECOWAS was established in:', opts:['1960','1975','1980','1963'], ans:1, exp:'ECOWAS (Economic Community of West African States) was established in 1975.' },
+        { q:'Which arm of government makes laws?', opts:['Executive','Judiciary','Legislature','Military'], ans:2, exp:'The Legislature (National Assembly in Nigeria) is responsible for making laws.' },
+      ],
+      literature: [
+        { q:'Who wrote "Things Fall Apart"?', opts:['Wole Soyinka','Chinua Achebe','J.P. Clark','Cyprian Ekwensi'], ans:1, exp:'"Things Fall Apart" (1958) by Chinua Achebe is one of Africa\'s most celebrated novels.' },
+        { q:'Okonkwo is the protagonist of which novel?', opts:['Arrow of God','Things Fall Apart','No Longer at Ease','Weep Not Child'], ans:1, exp:'Okonkwo is the tragic hero of Chinua Achebe\'s "Things Fall Apart".' },
+        { q:'A monologue spoken alone on stage is called a:', opts:['Dialogue','Aside','Soliloquy','Prologue'], ans:2, exp:'A soliloquy is when a character speaks their thoughts aloud to the audience, alone on stage.' },
+        { q:'Which literary device is used in "The wind whispered through the trees"?', opts:['Simile','Metaphor','Personification','Hyperbole'], ans:2, exp:'Giving human qualities (whispering) to non-human things (wind) is personification.' },
+        { q:'"Chike and the River" was written by:', opts:['Chinua Achebe','Amos Tutuola','Ngugi wa Thiong\'o','Ben Okri'], ans:0, exp:'"Chike and the River" (1966) is a children\'s novel by Chinua Achebe.' },
+        { q:'The central message or insight of a literary work is its:', opts:['Plot','Tone','Theme','Setting'], ans:2, exp:'The theme is the central idea or underlying message that the author wants to convey.' },
+      ],
+      history: [
+        { q:'In what year did Nigeria gain independence?', opts:['1957','1960','1963','1966'], ans:1, exp:'Nigeria gained independence from Britain on October 1, 1960.' },
+        { q:'The first book of the Bible is:', opts:['Exodus','Leviticus','Genesis','Numbers'], ans:2, exp:'Genesis is the first book of the Bible, describing creation and early human history.' },
+        { q:'Which event marked the beginning of World War I?', opts:['Assassination of Archduke Franz Ferdinand','Bombing of Pearl Harbor','D-Day invasion','Fall of Berlin'], ans:0, exp:'The assassination of Archduke Franz Ferdinand in 1914 triggered WWI.' },
+        { q:'The Berlin Conference of 1884–85 was convened to:', opts:['End WWI','Partition Africa among European powers','Form the UN','Abolish slavery'], ans:1, exp:'European powers met in Berlin to divide Africa among themselves without African input.' },
+        { q:'Jesus was baptised by:', opts:['Peter','Paul','John the Baptist','Andrew'], ans:2, exp:'John the Baptist baptised Jesus in the Jordan River, as recorded in the Gospels.' },
+        { q:'The Nigerian Civil War lasted from:', opts:['1960–1963','1966–1967','1967–1970','1970–1975'], ans:2, exp:'The Nigerian Civil War (Biafran War) lasted from July 1967 to January 1970.' },
+      ],
+      economics: [
+        { q:'The law of demand states that as price rises, quantity demanded:', opts:['Rises','Falls','Stays same','Doubles'], ans:1, exp:'Inverse relationship between price and quantity demanded — higher price, less demand.' },
+        { q:'GDP stands for:', opts:['Gross Domestic Product','General Domestic Price','Gross Demand Price','General Demand Product'], ans:0, exp:'GDP (Gross Domestic Product) measures total value of goods and services produced in a country.' },
+        { q:'Inflation means a general:', opts:['Fall in prices','Rise in prices','Rise in wages only','Fall in employment'], ans:1, exp:'Inflation is a sustained general increase in the price level of goods and services.' },
+        { q:'A market where there is only one seller is called a:', opts:['Oligopoly','Duopoly','Monopoly','Perfect competition'], ans:2, exp:'A monopoly exists when a single seller dominates the entire market for a product.' },
+        { q:'Which of these is a factor of production?', opts:['Money','Profit','Capital','Sales'], ans:2, exp:'The four factors of production are Land, Labour, Capital, and Entrepreneurship.' },
+        { q:'The opportunity cost of a decision is:', opts:['The money spent','The next best alternative forgone','The total cost','The profit made'], ans:1, exp:'Opportunity cost = the value of the best alternative you gave up to make your choice.' },
+      ],
+      geography: [
+        { q:'The longest river in Africa is the:', opts:['Congo','Niger','Nile','Zambezi'], ans:2, exp:'The Nile (6,650 km) is the longest river in Africa and one of the longest in the world.' },
+        { q:'Which of these is a renewable source of energy?', opts:['Coal','Natural gas','Petroleum','Solar'], ans:3, exp:'Solar energy is renewable because it comes from the sun and is inexhaustible.' },
+        { q:'The imaginary line at 0° latitude is called the:', opts:['Prime Meridian','Tropic of Cancer','Equator','Arctic Circle'], ans:2, exp:'The Equator is the 0° latitude line dividing Earth into Northern and Southern Hemispheres.' },
+        { q:'Nigeria\'s highest point is:', opts:['Chappal Waddi','Obudu Plateau','Mandara Hills','Biu Plateau'], ans:0, exp:'Chappal Waddi (2,419 m) in Taraba State is Nigeria\'s highest peak.' },
+        { q:'The climate at the Equator is best described as:', opts:['Desert','Temperate','Tropical Rainforest','Mediterranean'], ans:2, exp:'Equatorial regions have a hot, wet tropical rainforest climate with high rainfall year-round.' },
+        { q:'Which rock type is formed from cooled magma?', opts:['Sedimentary','Metamorphic','Igneous','Limestone'], ans:2, exp:'Igneous rocks form when molten magma cools and solidifies, either underground or at the surface.' },
+      ],
+      commerce: [
+        { q:'The document sent by a seller to a buyer listing goods and their prices is a:', opts:['Receipt','Invoice','Debit note','Credit note'], ans:1, exp:'An invoice is a commercial document itemizing goods supplied and their prices.' },
+        { q:'Wholesalers sell goods to:', opts:['Final consumers','Retailers','Manufacturers','Government'], ans:1, exp:'Wholesalers buy in bulk from manufacturers and sell in smaller quantities to retailers.' },
+        { q:'Insurance that covers goods in transit is called:', opts:['Life insurance','Fire insurance','Marine insurance','Motor insurance'], ans:2, exp:'Marine insurance covers cargo, ships, and goods in transit over sea or land.' },
+        { q:'A cheque is an example of:', opts:['Currency','Bill of exchange','Promissory note','Letter of credit'], ans:1, exp:'A cheque is a bill of exchange drawn on a bank, instructing it to pay a specified amount.' },
+        { q:'The act of buying and selling of goods is called:', opts:['Production','Distribution','Trade','Consumption'], ans:2, exp:'Trade is the exchange of goods and services between buyers and sellers.' },
+        { q:'Entrepôt trade means:', opts:['Local trading only','Re-exporting imported goods','Trading on credit','Barter trade'], ans:1, exp:'Entrepôt trade is when a country imports goods and then re-exports them to other countries.' },
+      ],
+      accounting: [
+        { q:'The accounting equation is:', opts:['Assets = Liabilities + Capital','Assets = Revenue - Expenses','Capital = Assets + Liabilities','Revenue = Assets - Liabilities'], ans:0, exp:'The fundamental accounting equation: Assets = Liabilities + Owner\'s Equity (Capital).' },
+        { q:'A credit entry on a liability account means the liability:', opts:['Decreases','Increases','Stays the same','Is cancelled'], ans:1, exp:'Liabilities increase on the credit side — credit increases liabilities per double-entry rules.' },
+        { q:'Depreciation is best described as:', opts:['Loss of cash','Wear and tear on fixed assets','Increase in asset value','A bank charge'], ans:1, exp:'Depreciation allocates the cost of a tangible asset over its useful life due to wear and tear.' },
+        { q:'The document used to correct an overcharge on an invoice is a:', opts:['Debit note','Credit note','Receipt','Invoice'], ans:1, exp:'A credit note reduces the amount owed — used when a buyer was overcharged.' },
+        { q:'Gross profit is calculated as:', opts:['Sales minus all expenses','Sales minus cost of goods sold','Net profit plus expenses','Revenue minus tax'], ans:1, exp:'Gross Profit = Sales Revenue − Cost of Goods Sold (COGS), before deducting other expenses.' },
+        { q:'A trial balance is used to:', opts:['Prepare tax returns','Check arithmetical accuracy of ledger','Calculate depreciation','Record cash transactions'], ans:1, exp:'A trial balance lists all ledger balances to verify that total debits equal total credits.' },
+      ],
+    };
+
+    // Seeded "random" for daily question (same for everyone on same date)
+    function seededRandom(seed) {
+      let x = Math.sin(seed) * 10000;
+      return x - Math.floor(x);
+    }
+    function getDailyQuestion() {
+      const today = new Date();
+      const seed = today.getFullYear() * 10000 + (today.getMonth()+1) * 100 + today.getDate();
+      const trackSubs = getTrackSubjects();
+      const subjectKeys = trackSubs.map(s => s.id);
+      const sIdx = Math.floor(seededRandom(seed) * subjectKeys.length);
+      const subjectId = subjectKeys[sIdx];
+      const bank = QUESTION_BANK[subjectId];
+      const qIdx = Math.floor(seededRandom(seed + 1) * bank.length);
+      return { ...bank[qIdx], subjectId, subject: ALL_SUBJECTS.find(s=>s.id===subjectId) };
+    }
+    function todayStr() {
+      const d = new Date();
+      return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate();
+    }
+
+    // Streak logic
+    function getStreakLocal() { return JSON.parse(localStorage.getItem('ch_streak') || '{"count":0,"dates":[]}'); }
+    function saveStreakLocal(s) { localStorage.setItem('ch_streak', JSON.stringify(s)); }
+    function markTodayDone() {
+      const s = getStreakLocal();
+      const t = todayStr();
+      if (s.dates.includes(t)) return;
+      const yesterday = new Date(); yesterday.setDate(yesterday.getDate()-1);
+      const yStr = yesterday.getFullYear()+'-'+(yesterday.getMonth()+1)+'-'+yesterday.getDate();
+      if (s.dates.length && s.dates[s.dates.length-1] === yStr) {
+        s.count++;
+      } else if (!s.dates.length || s.dates[s.dates.length-1] !== t) {
+        s.count = 1;
+      }
+      s.dates.push(t);
+      if (s.dates.length > 7) s.dates = s.dates.slice(-7);
+      saveStreakLocal(s);
+    }
+    function renderStreak() {
+      const s = getStreakLocal();
+      document.getElementById('streak-count').textContent = s.count;
+      const days = ['M','T','W','T','F','S','S'];
+      const today = new Date().getDay(); // 0=Sun
+      const container = document.getElementById('streak-days');
+      container.innerHTML = '';
+      for (let i=0; i<7; i++) {
+        const d = document.createElement('div');
+        d.className = 'streak-day';
+        // check if that day of current week is in dates
+        const dayDate = new Date();
+        const diff = i - (today === 0 ? 6 : today - 1);
+        dayDate.setDate(dayDate.getDate() + diff);
+        const ds = dayDate.getFullYear()+'-'+(dayDate.getMonth()+1)+'-'+dayDate.getDate();
+        const isToday = diff === 0;
+        if (s.dates.includes(ds)) d.classList.add('done');
+        else if (isToday) d.classList.add('today');
+        d.textContent = days[i];
+        container.appendChild(d);
+      }
+    }
+
+    // Daily challenge state
+    function getDailyState() { return JSON.parse(localStorage.getItem('ch_daily_'+todayStr()) || 'null'); }
+    function saveDailyState(state) { localStorage.setItem('ch_daily_'+todayStr(), JSON.stringify(state)); }
+
+    // Battle scores
+    function getBattleScore(subjectId) { return JSON.parse(localStorage.getItem('ch_battle_'+subjectId) || 'null'); }
+    function saveBattleScore(subjectId, score, total) {
+      const prev = getBattleScore(subjectId);
+      if (!prev || score > prev.score) {
+        localStorage.setItem('ch_battle_'+subjectId, JSON.stringify({score, total, date: todayStr()}));
+      }
+    }
+
+    // Leaderboard (local mock + user)
+    const MOCK_LEADERS = [
+      {name:'Chukwuemeka O.', score:95, streak:12, color:'#4f8ef7'},
+      {name:'Fatima A.',      score:90, streak:8,  color:'#a78bfa'},
+      {name:'Tunde B.',       score:85, streak:5,  color:'#22c55e'},
+      {name:'Ngozi C.',       score:80, streak:3,  color:'#f87171'},
+    ];
+    function renderLeaderboard() {
+      const container = document.getElementById('leaderboard');
+      const user = getUser();
+      const userName = user?.name || null;
+      const userStreak = getStreakLocal().count;
+      // Tally user score from battles
+      let userScore = 0;
+      for (const s of ALL_SUBJECTS) {
+        const b = getBattleScore(s.id);
+        if (b) userScore += b.score;
+      }
+      const dailyState = getDailyState();
+      if (dailyState?.correct) userScore += 20;
+
+      const allEntries = [...MOCK_LEADERS];
+      if (userName) {
+        allEntries.push({name: userName + ' (You)', score: userScore, streak: userStreak, color:'#f59e0b', isMe: true});
+      }
+      allEntries.sort((a,b) => b.score - a.score);
+
+      const rankClasses = ['gold','silver','bronze'];
+      const rankEmojis = ['🥇','🥈','🥉'];
+      container.innerHTML = '';
+      allEntries.slice(0,6).forEach((entry, i) => {
+        const row = document.createElement('div');
+        row.className = 'lb-row' + (entry.isMe ? ' me' : '');
+        const initial = entry.name.charAt(0).toUpperCase();
+        row.innerHTML = `
+          <div class="lb-rank ${rankClasses[i]||''}">${i < 3 ? rankEmojis[i] : i+1}</div>
+          <div class="lb-avatar" style="background:${entry.color}">${initial}</div>
+          <div class="lb-name">${entry.name}</div>
+          <div style="text-align:right;">
+            <div class="lb-score">${entry.score}pts</div>
+            <div class="lb-streak">🔥${entry.streak}</div>
+          </div>`;
+        container.appendChild(row);
+      });
+    }
+
+    function renderBattles() {
+      const grid = document.getElementById('battles-grid');
+      grid.innerHTML = '';
+      getTrackSubjects().forEach(s => {
+        const prev = getBattleScore(s.id);
+        const card = document.createElement('div');
+        card.className = 'battle-card';
+        card.style.background = `linear-gradient(135deg, ${s.color}, #0b1120)`;
+        card.style.borderColor = s.accent + '33';
+        card.innerHTML = `
+          <div class="battle-icon">${s.icon}</div>
+          <div class="battle-name">${s.name}</div>
+          <div class="battle-count">5 rapid-fire questions</div>
+          ${prev ? `<div class="battle-played">Best: ${prev.score}/${prev.total*10}pts</div>` : ''}`;
+        card.onclick = () => startBattle(s.id);
+        grid.appendChild(card);
+      });
+    }
+
+    // ── QUIZ ENGINE ──
+    let quizState = null;
+
+    function startQuiz(questions, subjectId, mode) {
+      const subject = ALL_SUBJECTS.find(s => s.id === subjectId);
+      quizState = { questions, subjectId, subject, mode, current: 0, score: 0, timer: null, timeLeft: 30 };
+      document.getElementById('ch-body').style.display = 'none';
+      const qs = document.getElementById('quiz-screen');
+      qs.classList.add('active');
+      document.getElementById('quiz-result').style.display = 'none';
+      document.getElementById('quiz-content').style.display = '';
+      document.getElementById('quiz-subject-label').textContent = subject.icon + ' ' + subject.name;
+      renderQuizQuestion();
+    }
+
+    function renderQuizQuestion() {
+      const { questions, current } = quizState;
+      const q = questions[current];
+      const total = questions.length;
+
+      document.getElementById('quiz-progress-fill').style.width = (current / total * 100) + '%';
+      document.getElementById('quiz-qnum').textContent = `Question ${current+1} of ${total}`;
+      document.getElementById('quiz-question').textContent = q.q;
+
+      const optContainer = document.getElementById('quiz-options');
+      optContainer.innerHTML = '';
+      q.opts.forEach((opt, i) => {
+        const btn = document.createElement('button');
+        btn.className = 'quiz-option';
+        btn.textContent = opt;
+        btn.onclick = () => selectAnswer(i);
+        optContainer.appendChild(btn);
+      });
+
+      document.getElementById('quiz-explanation').style.display = 'none';
+      document.getElementById('quiz-next-btn').style.display = 'none';
+      document.getElementById('quiz-next-btn').textContent = current+1 < total ? 'Next Question' : 'See Results';
+
+      // Timer
+      clearInterval(quizState.timer);
+      quizState.timeLeft = 30;
+      document.getElementById('quiz-timer').textContent = '⏱ 30s';
+      quizState.timer = setInterval(() => {
+        quizState.timeLeft--;
+        document.getElementById('quiz-timer').textContent = '⏱ ' + quizState.timeLeft + 's';
+        if (quizState.timeLeft <= 0) {
+          clearInterval(quizState.timer);
+          selectAnswer(-1); // time out = wrong
+        }
+      }, 1000);
+    }
+
+    function selectAnswer(idx) {
+      clearInterval(quizState.timer);
+      const q = quizState.questions[quizState.current];
+      const btns = document.querySelectorAll('.quiz-option');
+      btns.forEach(b => b.disabled = true);
+      if (idx === q.ans) {
+        btns[idx]?.classList.add('correct');
+        quizState.score++;
+      } else {
+        if (idx >= 0) btns[idx]?.classList.add('wrong');
+        btns[q.ans]?.classList.add('correct');
+      }
+      const exp = document.getElementById('quiz-explanation');
+      exp.textContent = '💡 ' + q.exp;
+      exp.style.display = 'block';
+      document.getElementById('quiz-next-btn').style.display = 'block';
+    }
+
+    function nextQuestion() {
+      quizState.current++;
+      if (quizState.current >= quizState.questions.length) {
+        showQuizResult();
+      } else {
+        renderQuizQuestion();
+      }
+    }
+
+    function showQuizResult() {
+      const { score, questions, subjectId, mode } = quizState;
+      const total = questions.length;
+      const pts = score * 10;
+      const pct = Math.round(score/total*100);
+
+      if (mode === 'daily') {
+        saveDailyState({ correct: score === total, score, total, date: todayStr() });
+        markTodayDone();
+        renderStreak();
+        renderDailyCard();
+      } else {
+        saveBattleScore(subjectId, pts, total);
+        renderBattles();
+      }
+      renderLeaderboard();
+
+      document.getElementById('quiz-content').style.display = 'none';
+      const result = document.getElementById('quiz-result');
+      result.style.display = 'flex';
+      document.getElementById('result-trophy').textContent = pct===100?'🏆':pct>=60?'🎯':'📚';
+      document.getElementById('result-score').textContent = score + '/' + total;
+      document.getElementById('result-label').textContent = pct===100?'Perfect! Exceptional!':pct>=80?'Great job!':pct>=60?'Good effort!':'Keep practising!';
+      document.getElementById('result-rank').textContent = '🔥 +'+(score*10)+' points added to leaderboard';
+      document.getElementById('quiz-progress-fill').style.width = '100%';
+    }
+
+    let lastBattleSubject = null;
+    function startBattle(subjectId) {
+      if (!getSession()) { closeChallenge(); document.getElementById('auth-overlay').classList.remove('hidden'); return; }
+      lastBattleSubject = subjectId;
+      const bank = QUESTION_BANK[subjectId];
+      const shuffled = [...bank].sort(() => Math.random()-0.5).slice(0,5);
+      startQuiz(shuffled, subjectId, 'battle');
+    }
+
+    function retryBattle() {
+      if (lastBattleSubject) startBattle(lastBattleSubject);
+    }
+
+    function startDaily() {
+      if (!getSession()) { closeChallenge(); document.getElementById('auth-overlay').classList.remove('hidden'); return; }
+      const dq = getDailyQuestion();
+      startQuiz([dq], dq.subjectId, 'daily');
+    }
+
+    function renderDailyCard() {
+      const dq = getDailyQuestion();
+      const state = getDailyState();
+      const subject = ALL_SUBJECTS.find(s => s.id === dq.subjectId);
+      document.getElementById('daily-subject').textContent = subject.icon + ' ' + subject.name;
+      document.getElementById('daily-question').textContent = dq.q;
+      const btn = document.getElementById('daily-btn');
+      const topBadge = document.getElementById('daily-card').querySelector('.daily-badge');
+      if (state) {
+        btn.textContent = state.correct ? '✅ Completed!' : '✅ Attempted';
+        btn.disabled = true;
+        topBadge.className = 'daily-done-badge';
+        topBadge.textContent = 'DONE';
+        document.getElementById('daily-meta').textContent = 'Come back tomorrow for a new question!';
+      } else {
+        btn.textContent = 'Attempt Now';
+        btn.disabled = false;
+        topBadge.className = 'daily-badge';
+        topBadge.textContent = 'TODAY';
+        document.getElementById('daily-meta').textContent = 'One attempt only · +20 streak points';
+      }
+    }
+
+    // Friend challenge
+    function generateFriendCode() {
+      if (!getSession()) { closeChallenge(); document.getElementById('auth-overlay').classList.remove('hidden'); return; }
+      const code = Math.random().toString(36).substring(2,8).toUpperCase();
+      localStorage.setItem('ch_friend_code', JSON.stringify({code, date: todayStr()}));
+      document.getElementById('friend-code-text').textContent = code;
+      document.getElementById('friend-code-display').style.display = 'block';
+    }
+
+    function shareFriendCode() {
+      const code = document.getElementById('friend-code-text').textContent;
+      const msg = encodeURIComponent(`🏆 I challenge you on OpenCBT! Use code *${code}* to compete with me. Try it: opencbt.com`);
+      window.open('https://wa.me/?text=' + msg, '_blank');
+    }
+
+    function joinFriendChallenge() {
+      const code = prompt('Enter your friend\'s challenge code:');
+      if (!code) return;
+      // Pick random subject battle as the "challenge"
+      const subjectKeys = Object.keys(QUESTION_BANK);
+      const idx = code.charCodeAt(0) % subjectKeys.length;
+      startBattle(subjectKeys[idx]);
+    }
+
+    function openChallenge() {
+      if (!getSession()) { document.getElementById('auth-overlay').classList.remove('hidden'); return; }
+      document.getElementById('challenge-overlay').classList.remove('hidden');
+      showChallengeBody();
+    }
+
+    function showTrackScreen() {
+      document.getElementById('ch-body').style.display = 'none';
+      document.getElementById('track-screen').style.display = 'flex';
+    }
+
+    function pickTrack(t) {
+      setUserTrack(t);
+      document.getElementById('track-screen').style.display = 'none';
+      showChallengeBody();
+    }
+
+    function changeTrack() {
+      document.getElementById('ch-body').style.display = 'none';
+      document.getElementById('track-screen').style.display = 'flex';
+    }
+
+    function showChallengeBody() {
+      document.getElementById('track-screen').style.display = 'none';
+      document.getElementById('ch-body').style.display = '';
+      const trackLabels = { science:'🔬 Science', arts:'🎨 Arts', social:'📊 Social Science' };
+      document.getElementById('ch-sub-text').textContent = trackLabels[getUserTrack()] + ' Track';
+      renderStreak();
+      renderDailyCard();
+      renderBattles();
+      renderLeaderboard();
+    }
+
+    function closeChallenge() {
+      clearInterval(quizState?.timer);
+      quizState = null;
+      document.getElementById('challenge-overlay').classList.add('hidden');
+      document.getElementById('ch-body').style.display = '';
+      document.getElementById('track-screen').style.display = 'none';
+      const qs = document.getElementById('quiz-screen');
+      qs.classList.remove('active');
+    }
+
+    document.getElementById('challenge-overlay')?.addEventListener('click', function(e) {
+      if (e.target === this) closeChallenge();
+    });
+
   </script>
+
+
+  <!-- CHALLENGE ARENA OVERLAY -->
+  <div id="challenge-overlay" class="hidden">
+    <div class="challenge-dialog" id="challenge-dialog">
+
+      <!-- Header -->
+      <div class="ch-header">
+        <div class="ch-header-left">
+          <div class="ch-icon">⚡</div>
+          <div>
+            <div class="ch-title">Challenge Arena</div>
+            <div class="ch-sub" id="ch-sub-text">Compete. Win. Repeat.</div>
+          </div>
+        </div>
+        <button class="ch-close" onclick="closeChallenge()">✕</button>
+      </div>
+
+      <!-- Track Selection Screen -->
+      <div class="track-screen" id="track-screen">
+        <div class="track-title">What's your track? 🎓</div>
+        <div class="track-subtitle">We'll show you the right subjects for daily<br/>challenges and battles.</div>
+        <div class="track-cards">
+          <div class="track-card science" onclick="pickTrack('science')">
+            <div class="track-icon">🔬</div>
+            <div>
+              <div class="track-info-name">Science</div>
+              <div class="track-info-subs">Maths · English · Biology · Physics · Chemistry · Government</div>
+            </div>
+          </div>
+          <div class="track-card arts" onclick="pickTrack('arts')">
+            <div class="track-icon">🎨</div>
+            <div>
+              <div class="track-info-name">Arts</div>
+              <div class="track-info-subs">English · Literature · Government · Hist./CRK · Economics · Geography</div>
+            </div>
+          </div>
+          <div class="track-card commercial" onclick="pickTrack('social')">
+            <div class="track-icon">📊</div>
+            <div>
+              <div class="track-info-name">Social Science</div>
+              <div class="track-info-subs">English · Maths · Economics · Commerce · Accounting · Government</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Main scrollable body -->
+      <div class="ch-body" id="ch-body">
+
+        <!-- Streak -->
+        <div class="streak-bar">
+          <div class="streak-flame">🔥</div>
+          <div style="flex:1;">
+            <div class="streak-count" id="streak-count">0</div>
+            <div class="streak-label">DAY STREAK</div>
+            <div class="streak-days" id="streak-days"></div>
+          </div>
+          <button class="track-change-btn" onclick="changeTrack()">Change Track</button>
+        </div>
+
+        <!-- Daily Challenge -->
+        <div class="ch-label">⭐ Daily Challenge</div>
+        <div class="daily-card" id="daily-card">
+          <div class="daily-card-top">
+            <span class="daily-badge">TODAY</span>
+            <span class="daily-subject" id="daily-subject"></span>
+          </div>
+          <div class="daily-question" id="daily-question">Loading today's question...</div>
+          <div class="daily-meta" id="daily-meta"></div>
+          <button class="daily-attempt-btn" id="daily-btn" onclick="startDaily()">Attempt Now</button>
+        </div>
+
+        <!-- Subject Battles -->
+        <div class="ch-label">⚔️ Subject Battles</div>
+        <div class="battles-grid" id="battles-grid"></div>
+
+        <!-- Leaderboard -->
+        <div class="ch-label">🏆 Today's Leaderboard</div>
+        <div class="leaderboard" id="leaderboard"></div>
+
+        <!-- Challenge a Friend -->
+        <div class="ch-label">👥 Challenge a Friend</div>
+        <div class="friend-card">
+          <div class="friend-title">Send a Challenge Code</div>
+          <div class="friend-sub">Generate a code, share on WhatsApp — first to finish wins 🏁</div>
+          <div class="friend-btns">
+            <button class="friend-btn gen" onclick="generateFriendCode()">Generate Code</button>
+            <button class="friend-btn join" onclick="joinFriendChallenge()">Join Code</button>
+          </div>
+          <div class="friend-code-display" id="friend-code-display">
+            <div class="friend-code" id="friend-code-text"></div>
+            <div class="friend-code-hint">Share this code with your friend</div>
+            <button class="daily-attempt-btn" style="margin-top:8px;" onclick="shareFriendCode()">Share on WhatsApp</button>
+          </div>
+        </div>
+
+      </div><!-- end ch-body -->
+
+      <!-- Quiz screen (hidden until started) -->
+      <div class="quiz-screen" id="quiz-screen">
+        <div class="quiz-top">
+          <div class="quiz-meta">
+            <span class="quiz-subject" id="quiz-subject-label"></span>
+            <span class="quiz-timer" id="quiz-timer">⏱ 30s</span>
+          </div>
+          <div class="quiz-progress-bar"><div class="quiz-progress-fill" id="quiz-progress-fill" style="width:0%"></div></div>
+          <div class="quiz-qnum" id="quiz-qnum"></div>
+        </div>
+        <div class="quiz-content" id="quiz-content">
+          <div class="quiz-question" id="quiz-question"></div>
+          <div class="quiz-options" id="quiz-options"></div>
+          <div class="quiz-explanation" id="quiz-explanation"></div>
+          <button class="quiz-next-btn" id="quiz-next-btn" onclick="nextQuestion()"></button>
+        </div>
+        <!-- Result -->
+        <div class="quiz-result" id="quiz-result" style="display:none;">
+          <div class="result-trophy" id="result-trophy"></div>
+          <div class="result-score" id="result-score"></div>
+          <div class="result-label" id="result-label"></div>
+          <div class="result-rank" id="result-rank"></div>
+          <div class="result-btns">
+            <button class="result-btn secondary" onclick="closeChallenge()">Home</button>
+            <button class="result-btn primary" onclick="retryBattle()">Play Again</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
 
 </body>
 </html>
