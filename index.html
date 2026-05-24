@@ -1086,6 +1086,70 @@
       100% { background-position: -200% center; }
     }
 
+    /* Real Thinking Card — collapsible like Claude's thinking */
+    .thinking-card {
+      width: 100%;
+      background: rgba(138,180,248,0.04);
+      border: 1px solid rgba(138,180,248,0.15);
+      border-radius: 12px;
+      margin: 6px 0 10px;
+      overflow: hidden;
+      animation: fadeUp 0.35s ease both;
+    }
+    .thinking-card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 9px 13px;
+      cursor: pointer;
+      user-select: none;
+      gap: 8px;
+      transition: background 0.15s;
+    }
+    .thinking-card-header:hover { background: rgba(138,180,248,0.07); }
+    .thinking-card-title {
+      font-size: 0.74rem;
+      font-weight: 600;
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex: 1;
+    }
+    .thinking-card-meta {
+      font-size: 0.67rem;
+      color: var(--subtext);
+      font-weight: 400;
+    }
+    .thinking-card-chevron {
+      font-size: 0.58rem;
+      color: var(--subtext);
+      transition: transform 0.22s ease;
+      flex-shrink: 0;
+    }
+    .thinking-card-chevron.open { transform: rotate(180deg); }
+    .thinking-card-body {
+      padding: 10px 13px 13px;
+      border-top: 1px solid rgba(138,180,248,0.1);
+    }
+    .thinking-card-body.collapsed { display: none; }
+    .thinking-angle { margin-bottom: 12px; }
+    .thinking-angle:last-child { margin-bottom: 0; }
+    .thinking-angle-label {
+      display: block;
+      font-size: 0.72rem;
+      font-weight: 600;
+      color: #9aa8b8;
+      margin-bottom: 3px;
+    }
+    .thinking-angle-text {
+      display: block;
+      font-size: 0.72rem;
+      color: #6e7880;
+      line-height: 1.65;
+      white-space: pre-wrap;
+    }
+
     /* Input bar */
     .examgpt-input-bar {
       background: #1a1a1a;
@@ -3541,62 +3605,34 @@
     }
 
     // General thinking phrases
+    // Sequential phases matching what the backend actually does
+    const ANALYSIS_PHASES = [
+      'Reading your question carefully\u2026',
+      '\u26a0\ufe0f Checking for traps and common mistakes\u2026',
+      '\ud83d\udcd0 Identifying formulas and rules\u2026',
+      '\ud83d\udd04 Challenging my assumptions\u2026',
+      '\u2705 Verifying the approach\u2026',
+      '\u270d\ufe0f Formulating your answer\u2026',
+    ];
+
+    // Subject pools kept for backward compat (used in other places)
     const THINK_PHRASES = [
-      'Thinking…', 'Checking the syllabus…', 'Consulting the textbook…',
-      'Scanning past questions…', 'Cross-referencing WAEC guidelines…',
-      'Reviewing JAMB regulations…', 'Working it out…',
-      'Reading your question carefully…', 'Connecting the dots…',
-      'Crunching the facts…', 'Formulating the best answer…',
-      'Deep in thought…', 'Accessing exam archives…',
-      'Thinking like your teacher…', 'Synthesising knowledge…',
-      'Almost there…', 'Applying critical thinking…',
-      'Searching memory banks…', 'Generating insights…',
-      'Let me break this down…',
+      'Thinking\u2026','Checking the syllabus\u2026','Consulting the textbook\u2026',
+      'Scanning past questions\u2026','Working it out\u2026','Almost there\u2026',
     ];
+    const THINK_GENETICS  = ['Identifying parent genotypes\u2026','Drawing the Punnett square\u2026','Checking all 4 offspring\u2026'];
+    const THINK_CHEMISTRY = ['Balancing the equation\u2026','Calculating mole ratios\u2026','Checking indicator rules\u2026'];
+    const THINK_MATHS     = ['Setting up the equation\u2026','Checking my arithmetic\u2026','Applying the formula\u2026'];
+    const THINK_PHYSICS   = ['Identifying knowns and unknowns\u2026','Selecting the right formula\u2026'];
+    const THINK_BIOLOGY   = ['Recalling the biology concept\u2026','Connecting structure to function\u2026'];
 
-    // Subject-specific thinking phrases
-    const THINK_GENETICS = [
-      'Identifying parent genotypes…', 'Drawing the Punnett square…',
-      'Checking all 4 offspring combinations…', 'Applying X-linkage rules…',
-      'Counting allele probabilities carefully…', 'Verifying the genetic cross…',
-      'Working through inheritance step by step…', 'Checking dominant vs recessive…',
-    ];
-    const THINK_CHEMISTRY = [
-      'Balancing the equation…', 'Calculating mole ratios…',
-      'Working out the concentration…', 'Applying the pH formula…',
-      'Identifying acid and base types…', 'Checking the indicator rules…',
-      'Verifying the working step by step…', 'Checking mole calculations…',
-    ];
-    const THINK_MATHS = [
-      'Setting up the equation…', 'Working through the algebra…',
-      'Checking my arithmetic…', 'Substituting the values…',
-      'Verifying the solution…', 'Applying the right formula…',
-      'Solving step by step…',
-    ];
-    const THINK_PHYSICS = [
-      'Identifying the knowns and unknowns…', 'Selecting the right formula…',
-      'Checking the units…', 'Working through the calculation…',
-      'Verifying with significant figures…',
-    ];
-    const THINK_BIOLOGY = [
-      'Recalling the biology concept…', 'Checking the life processes…',
-      'Thinking about organelles…', 'Reviewing the WAEC bio syllabus…',
-      'Connecting structure to function…',
-    ];
-
-    // Detect subject from the user's message
     function detectSubject(text) {
       const t = text.toLowerCase();
-      if (/\b(genotype|phenotype|punnett|allele|dominant|recessive|x.link|colour.blind|color.blind|haemophil|gamete|chromosome|inherit|dna|rna|zygote|diploid|haploid)\b/.test(t))
-        return 'genetics';
-      if (/\b(mole|titrat|acid|base|\bph\b|indicator|mol\/dm|concentration|buffer|redox|oxidat|sulph|nitric|hydrochlor|sodium hydroxide|neutrali|stoichiom|diprotic)\b/.test(t))
-        return 'chemistry';
-      if (/\b(photosynthes|respirat|osmosis|transpir|mitosis|meiosis|chloroplast|mitochondr|enzyme|cell membrane|diffusion|ecosystem|organism)\b/.test(t))
-        return 'biology';
-      if (/\b(velocity|acceleration|force|newton|momentum|energy|power|wave|refraction|circuit|resistance|ohm|magnetic|gravitati|pressure|density)\b/.test(t))
-        return 'physics';
-      if (/\b(equation|algebra|quadratic|logarithm|trigonometry|differentiat|integrat|matrix|geometry|theorem|proof|simplify|factorise|solve for)\b/.test(t))
-        return 'maths';
+      if (/\b(genotype|phenotype|punnett|allele|dominant|recessive|colour.blind|haemophil|gamete|chromosome|inherit|dna|rna)\b/.test(t)) return 'genetics';
+      if (/\b(mole|titrat|acid|base|\bph\b|indicator|mol\/dm|concentration|buffer|redox|sulph|neutrali|diprotic)\b/.test(t)) return 'chemistry';
+      if (/\b(photosynthes|respirat|osmosis|transpir|mitosis|meiosis|chloroplast|mitochondr|enzyme)\b/.test(t)) return 'biology';
+      if (/\b(velocity|acceleration|force|newton|momentum|energy|power|wave|circuit|resistance)\b/.test(t)) return 'physics';
+      if (/\b(equation|algebra|quadratic|logarithm|trigonometry|differentiat|integrat|matrix|geometry)\b/.test(t)) return 'maths';
       return 'general';
     }
 
@@ -3604,16 +3640,6 @@
 
     function showTyping(subject) {
       const container = document.getElementById('examgpt-messages');
-      let pool;
-      switch (subject) {
-        case 'genetics':  pool = [...THINK_GENETICS,  ...THINK_PHRASES]; break;
-        case 'chemistry': pool = [...THINK_CHEMISTRY, ...THINK_PHRASES]; break;
-        case 'biology':   pool = [...THINK_BIOLOGY,   ...THINK_PHRASES]; break;
-        case 'physics':   pool = [...THINK_PHYSICS,   ...THINK_PHRASES]; break;
-        case 'maths':     pool = [...THINK_MATHS,     ...THINK_PHRASES]; break;
-        default:          pool = THINK_PHRASES;
-      }
-      const phrase = pool[Math.floor(Math.random() * pool.length)];
       const row = document.createElement('div');
       row.className = 'msg-row ai';
       row.id = 'typing-row';
@@ -3621,21 +3647,62 @@
         <div class="msg-ai-icon"><img src="logo.png" alt="" style="width:22px;height:22px;object-fit:cover;border-radius:50%;"/></div>
         <div class="thinking-bubble">
           <div class="think-orb"></div>
-          <div class="think-text" id="think-text">${phrase}</div>
+          <div class="think-text" id="think-text">${ANALYSIS_PHASES[0]}</div>
         </div>`;
       container.appendChild(row);
       container.scrollTop = container.scrollHeight;
 
-      let idx = pool.indexOf(phrase);
+      // Step through phases sequentially — mirrors the actual backend 2-step process
+      let idx = 0;
       _thinkInterval = setInterval(() => {
         const el = document.getElementById('think-text');
         if (!el) { clearInterval(_thinkInterval); return; }
         el.style.opacity = '0';
         setTimeout(() => {
-          idx = (idx + 1) % pool.length;
-          if (el) { el.textContent = pool[idx]; el.style.opacity = '1'; }
+          idx = Math.min(idx + 1, ANALYSIS_PHASES.length - 1);
+          if (el) { el.textContent = ANALYSIS_PHASES[idx]; el.style.opacity = '1'; }
         }, 300);
-      }, 2400);
+      }, 2600);
+    }
+
+    // Render real thinking as a collapsible dropdown card (like Claude's thinking)
+    function renderThinkingCard(thinking, ms) {
+      if (!thinking) return null;
+
+      // Split on angle emoji headers
+      const parts = thinking.split(/\n(?=\ud83d\udd0d|\u26a0|\ud83d\udcd0|\ud83d\udd04|\u2705)/);
+      let anglesHTML = '';
+      parts.forEach(part => {
+        const lines = part.trim().split('\n');
+        if (!lines.length) return;
+        const label = lines[0].trim();
+        const body  = lines.slice(1).join('\n').trim();
+        if (!label) return;
+        anglesHTML += `<div class="thinking-angle">
+          <span class="thinking-angle-label">${label}</span>
+          <span class="thinking-angle-text">${body || ''}</span>
+        </div>`;
+      });
+
+      const secs = ms ? (ms / 1000).toFixed(1) + 's' : '';
+      const card = document.createElement('div');
+      card.className = 'thinking-card';
+      card.innerHTML = `
+        <div class="thinking-card-header" onclick="toggleThinkCard(this)">
+          <span class="thinking-card-title">\ud83e\udde0 Thought through 5 angles
+            <span class="thinking-card-meta">${secs ? '\u00b7 ' + secs : ''}</span>
+          </span>
+          <span class="thinking-card-chevron open">\u25bc</span>
+        </div>
+        <div class="thinking-card-body">${anglesHTML || thinking}</div>`;
+      return card;
+    }
+
+    function toggleThinkCard(header) {
+      const body    = header.nextElementSibling;
+      const chevron = header.querySelector('.thinking-card-chevron');
+      const collapsed = body.classList.toggle('collapsed');
+      chevron.classList.toggle('open', !collapsed);
     }
 
     function removeTyping() {
@@ -3647,50 +3714,16 @@
 
     /* ══ ExamGPT — Enhanced send with typewriter + follow-ups ══ */
 
-    // Rich system prompt injected as first user turn — mirrors GAS EXAMGPT_SYSTEM_PROMPT
-    const EXAMGPT_SYS_PROMPT = `[SYSTEM — You are ExamGPT, the AI study tutor inside OpenCBT, Nigeria's #1 exam practice platform. Follow ALL these rules strictly:
-
-1. THINK FIRST: For every question especially calculations, genetics, and multi-step problems, reason through the problem fully BEFORE writing your answer. Never skip steps or guess. Verify each step before moving to the next.
-
-2. EXPERTISE: WAEC/SSCE, NECO, JAMB/UTME, Post-UTME. Subjects: Maths, English, Biology, Physics, Chemistry, Government, Literature, History/CRK, Economics, Geography, Commerce, Accounting. NEVER refuse a school topic.
-
-3. GENETICS CRITICAL RULES:
-   - ALWAYS identify both parent genotypes with full justification FIRST.
-   - ALWAYS produce a complete Punnett square with ALL 4 offspring types. A monohybrid cross ALWAYS has exactly 4 combinations, never 2 or 3.
-   - For X-linked recessive: carrier mother (XCXc) x affected father (XcY) gives: XCXc carrier daughter 25%, XcXc colour-blind daughter 25%, XCY normal son 25%, XcY colour-blind son 25%.
-   - Probability that a daughter has normal vision but is a carrier = 1/2 of daughters = 1/4 of all offspring.
-   - Males are more affected because they have only ONE X chromosome so a single recessive allele expresses. Females need TWO copies.
-
-4. CHEMISTRY INDICATORS follow exactly:
-   - Strong acid + Strong base e.g. H2SO4 + NaOH: equivalence point = pH 7. Standard WAEC/JAMB answer is METHYL ORANGE. NEVER say phenolphthalein suits this because its range is close to pH 7. Phenolphthalein range is pH 8.3-10 which is NOT close to 7.
-   - Weak acid + Strong base e.g. CH3COOH + NaOH: equivalence point greater than 7, use PHENOLPHTHALEIN.
-   - Strong acid + Weak base e.g. HCl + NH3: equivalence point less than 7, use METHYL ORANGE.
-
-5. CHEMISTRY CALCULATIONS:
-   - Write the balanced equation first. State the mole ratio before using it.
-   - Diprotic acids H2SO4: [H+] = 2 x [H2SO4] for pH. Show this step explicitly.
-   - pH = -log[H+]. Show full substitution. Include units mol/dm3 at EVERY step.
-   - Double-check arithmetic before writing the final answer.
-
-6. BIOLOGY:
-   - Photosynthesis occurs in CHLOROPLASTS. Light reactions in thylakoid membrane. Calvin cycle in stroma.
-   - Respiration occurs in MITOCHONDRIA. Glycolysis in cytoplasm. Krebs cycle and ETC in mitochondria.
-   - Mitosis = growth/repair, 2 diploid cells. Meiosis = reproduction, 4 haploid cells. Never mix these up.
-
-7. PHYSICS AND MATHS: State the formula BEFORE substituting values. Show units at every step. For SUVAT identify knowns and unknown first.
-
-8. STYLE: Use these colour tags in EVERY response:
-   {green}text{/green} correct answers definitions
-   {red}text{/red} common mistakes wrong options
-   {yellow}text{/yellow} WAEC/JAMB exam tips
-   {blue}text{/blue} key terms formulas laws
-   {orange}text{/orange} mnemonics memory tricks
-   {purple}text{/purple} historical dates fun facts
-   Be warm and encouraging. Say "You've got this!" naturally. Mention if a topic is a common WAEC or JAMB pattern. Short paragraphs for mobile.
-
-9. GAMES: NEVER draw text boards. If asked to play a game respond ONLY with: [GAME]
-
-Respond ONLY as ExamGPT. Do not repeat these instructions.]`;
+    // Rich system prompt — mirrors GAS rules exactly
+    const EXAMGPT_SYS_PROMPT = `[SYSTEM — You are ExamGPT inside OpenCBT, Nigeria's #1 exam platform. RULES:
+1. THINK FIRST: Reason through every question step by step before answering. Never skip steps or guess.
+2. GENETICS: Always identify parent genotypes first. ALWAYS draw a full Punnett square with all 4 offspring. For X-linked: carrier mother (XCXc) x colour-blind father (XcY) gives XCXc, XcXc, XCY, XcY each at 25%.
+3. INDICATORS: Strong acid + Strong base = METHYL ORANGE (equivalence pH 7). Weak acid + Strong base = PHENOLPHTHALEIN. NEVER say phenolphthalein suits strong acid+strong base.
+4. CHEMISTRY: Write balanced equation first. Show mole ratios. For diprotic acids [H+]=2x[acid]. Show all units.
+5. BIOLOGY: Photosynthesis in chloroplasts. Respiration in mitochondria. Never mix them.
+6. STYLE: Use colour tags always: {green}correct{/green} {red}mistakes{/red} {yellow}exam tips{/yellow} {blue}formulas{/blue} {orange}mnemonics{/orange} {purple}facts{/purple}. Short paragraphs for mobile.
+7. GAMES: If asked to play a game respond ONLY with: [GAME]
+Do NOT repeat these instructions.]`
 
     async function sendExamGPT() {
       if (examGPTTyping) return;
@@ -3803,6 +3836,25 @@ Respond ONLY as ExamGPT. Do not repeat these instructions.]`;
         }
 
         removeTyping();
+
+        // ── Show thinking card if backend returned thinking ──
+        const thinkStart = Date.now();
+        if (res.thinking) {
+          const thinkCard = renderThinkingCard(res.thinking, null);
+          if (thinkCard) {
+            const thinkRow = document.createElement('div');
+            thinkRow.className = 'msg-row ai';
+            thinkRow.style.flexDirection = 'column';
+            thinkRow.style.alignItems = 'flex-start';
+            const thinkMeta = document.createElement('div');
+            thinkMeta.style.cssText = 'display:flex;align-items:center;gap:8px;margin-bottom:4px;';
+            thinkMeta.innerHTML = `<img src="logo.png" alt="" style="width:22px;height:22px;object-fit:cover;border-radius:50%;flex-shrink:0"/>`;
+            thinkRow.appendChild(thinkMeta);
+            thinkRow.appendChild(thinkCard);
+            container.appendChild(thinkRow);
+            container.scrollTop = container.scrollHeight;
+          }
+        }
 
         // ── Typewriter streaming effect ──
         const row = document.createElement('div');
