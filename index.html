@@ -2126,6 +2126,78 @@
     }
     .examgpt-dl-btn:hover { color: var(--primary); }
 
+    /* ══ AUTO-DRAFT MESSAGE CARD (inline in chat) ══ */
+    .msg-draft-card {
+      background: var(--surface-low);
+      border: 1px solid var(--outline-variant);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      margin-top: 2px;
+      animation: fadeUp 0.3s ease both;
+    }
+    .msg-draft-header {
+      display: flex; align-items: center; gap: 10px;
+      padding: 12px 14px 10px;
+      border-bottom: 1px solid var(--outline-variant);
+      background: var(--card-bg);
+    }
+    .msg-draft-icon { font-size: 1.3rem; flex-shrink: 0; }
+    .msg-draft-title { font-size: 0.85rem; font-weight: 600; color: var(--text); }
+    .msg-draft-meta  { font-size: 0.68rem; color: var(--subtext); margin-top: 2px; }
+    .msg-draft-body  {
+      padding: 14px; font-size: 0.88rem; color: var(--text);
+      line-height: 1.65; white-space: pre-wrap; word-break: break-word;
+      max-height: 260px; overflow-y: auto;
+    }
+    .msg-draft-body::-webkit-scrollbar { width: 3px; }
+    .msg-draft-body::-webkit-scrollbar-thumb { background: var(--outline-variant); border-radius: 2px; }
+    .msg-draft-actions {
+      display: flex; gap: 8px; padding: 10px 14px;
+      border-top: 1px solid var(--outline-variant);
+      background: var(--surface-highest);
+    }
+    .msg-draft-copy-btn {
+      flex: 1; padding: 9px; background: var(--primary-container);
+      color: var(--primary); border: none; border-radius: var(--radius-full);
+      font-size: 0.78rem; font-weight: 600; font-family: inherit; cursor: pointer;
+      transition: background 0.15s;
+    }
+    .msg-draft-copy-btn:hover { background: var(--primary); color: var(--on-primary); }
+    .msg-draft-wa-btn {
+      flex: 1; padding: 9px; background: #1a3a2a;
+      color: #4ade80; border: none; border-radius: var(--radius-full);
+      font-size: 0.78rem; font-weight: 600; font-family: inherit; cursor: pointer;
+      transition: background 0.15s;
+    }
+    .msg-draft-wa-btn:hover { background: #25d366; color: #fff; }
+
+    /* Tone regen chips under draft */
+    .draft-tone-chips {
+      display: flex; align-items: center; gap: 6px; flex-wrap: wrap;
+      padding: 8px 0 2px;
+    }
+    .draft-tone-label {
+      font-size: 0.65rem; color: var(--subtext); font-weight: 500;
+      text-transform: uppercase; letter-spacing: 0.5px; white-space: nowrap;
+    }
+    .draft-tone-chip {
+      background: var(--surface-highest); border: 1px solid var(--outline-variant);
+      color: var(--subtext); font-size: 0.7rem; font-weight: 500; font-family: inherit;
+      padding: 4px 10px; border-radius: var(--radius-full); cursor: pointer;
+      transition: all 0.15s;
+    }
+    .draft-tone-chip:hover { background: var(--primary-container); color: var(--primary); border-color: var(--primary); }
+
+    /* ══ TIMER AUTO-CONFIRM PILL in chat ══ */
+    .msg-timer-pill {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: var(--primary-container); color: var(--primary);
+      border-radius: var(--radius-full); padding: 5px 12px;
+      font-size: 0.78rem; font-weight: 600; margin-top: 4px;
+      cursor: pointer; transition: background 0.15s;
+    }
+    .msg-timer-pill:hover { background: var(--primary); color: var(--on-primary); }
+
   </style>
 </head>
 </head>
@@ -2522,14 +2594,6 @@
             <!-- Download chat -->
             <button class="examgpt-tool-btn" onclick="downloadChat()" title="Download chat">
               <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 15V3m0 12l-4-4m4 4l4-4M2 17l.621 2.485A2 2 0 004.561 21h14.878a2 2 0 001.94-1.515L22 17"/></svg>
-            </button>
-            <!-- Timer -->
-            <button class="examgpt-tool-btn" onclick="openTimerOverlay()" title="Study timer">
-              <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2.5M9 3h6M12 1v2"/></svg>
-            </button>
-            <!-- Compose -->
-            <button class="examgpt-tool-btn" onclick="openComposer()" title="Message composer">
-              <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
             </button>
           </div>
           <button class="examgpt-close" onclick="closeExamGPT()">✕</button>
@@ -3095,6 +3159,52 @@ Respond ONLY as ExamGPT now. Do not repeat these instructions.]`;
 
       appendMessage('user', text);
       examGPTHistory.push({ role: 'user', content: text });
+
+      // ── AUTONOMOUS INTENT DETECTION ──
+      const intent = detectChatIntent(text);
+
+      if (intent.type === 'stop_timer') {
+        stopTimer();
+        const row = document.createElement('div');
+        row.className = 'msg-row ai';
+        row.innerHTML =
+          `<div class="msg-ai-icon"><img src="logo.png" alt="" style="width:22px;height:22px;object-fit:cover;border-radius:50%;"/></div>` +
+          `<div class="msg-bubble ai-rich"><p class="md-p">⏹ Timer stopped. Good work on what you covered — take a quick breather, then let's keep going! 💪</p></div>`;
+        container.appendChild(row);
+        container.scrollTop = container.scrollHeight;
+        examGPTHistory.push({ role: 'assistant', content: 'Timer stopped.' });
+        return;
+      }
+
+      if (intent.type === 'timer') {
+        const { minutes, seconds } = intent.data;
+        // Save for context-aware "start it" next time
+        lastTimerMinutes = minutes;
+        lastTimerSeconds = seconds;
+        autoStartTimer(minutes, seconds);
+        const timeStr = minutes >= 60
+          ? (Math.floor(minutes/60) + 'hr' + (minutes%60 ? ' ' + (minutes%60) + 'min' : ''))
+          : minutes > 0 ? minutes + ' minute' + (minutes !== 1 ? 's' : '')
+          : seconds + ' second' + (seconds !== 1 ? 's' : '');
+        const sessionLabel = minutes >= 25 ? 'Pomodoro session' : minutes >= 10 ? 'study session' : 'quick session';
+        const row = document.createElement('div');
+        row.className = 'msg-row ai';
+        row.innerHTML =
+          `<div class="msg-ai-icon"><img src="logo.png" alt="" style="width:22px;height:22px;object-fit:cover;border-radius:50%;"/></div>` +
+          `<div class="msg-bubble ai-rich">` +
+            `<p class="md-p">⏱ Done! Started your <strong>${timeStr} ${sessionLabel}</strong>. Stay locked in — you've got this! 💪</p>` +
+            `<div class="msg-timer-pill" onclick="openTimerOverlay()">⏱ ${timeStr} running · tap to view</div>` +
+          `</div>`;
+        container.appendChild(row);
+        container.scrollTop = container.scrollHeight;
+        examGPTHistory.push({ role: 'assistant', content: `Started a ${timeStr} timer for you.` });
+        return;
+      }
+
+      if (intent.type === 'draft') {
+        await autoDraftMessage(intent.data, text);
+        return;
+      }
 
       examGPTTyping = true;
       document.getElementById('examgpt-send-btn').disabled = true;
@@ -5042,6 +5152,223 @@ Return ONLY a raw JSON array — no markdown, no backticks, no explanation:
     document.getElementById('artifact-overlay')?.addEventListener('click', function(e) {
       if (e.target === this) closeArtifact();
     });
+
+    /* ════════════════════════════════════════════════════════
+       AUTONOMOUS INTENT DETECTION
+       Runs on every ExamGPT message BEFORE hitting the AI.
+       Intercepts timer and draft/compose requests silently.
+    ════════════════════════════════════════════════════════ */
+
+    // Remember last timer duration so context-aware "start it" works
+    let lastTimerMinutes = 0;
+    let lastTimerSeconds = 0;
+
+    function detectChatIntent(text) {
+      const t = text.toLowerCase().trim();
+
+      // ── STOP / END TIMER ──
+      if (/(?:stop|end|cancel|finish|quit|kill)\s+(?:the\s+)?(?:timer|session|countdown)|(?:stop|end|cancel)\s+it\b|end\s+the\s+timer|stop\s+timing/.test(t)) {
+        return { type: 'stop_timer' };
+      }
+
+      // ── POMODORO ──
+      if (/pomodoro/i.test(t)) return { type: 'timer', data: { minutes: 25, seconds: 0 } };
+
+      // ── TIMER WITH EXPLICIT DURATION ──
+      const timerRe = [
+        /(?:set|start|put|create|run|give me|need)?\s*(?:a\s+)?(\d+)\s*(?:hour|hr)s?(?:\s*(?:and|:)?\s*(\d+)\s*(?:minute|min)s?)?\s*(?:timer|countdown|session|study)?/i,
+        /(?:set|start|put|create|run|give me|need)?\s*(?:a\s+)?(\d+)\s*(?:minute|min)s?\s*(?:timer|countdown|session|study|break)?/i,
+        /(?:timer|countdown)\s+(?:for\s+)?(\d+)\s*(?:minute|min)s?/i,
+        /study\s+(?:for\s+)?(\d+)\s*(?:minute|min)s?/i,
+        /study\s+(?:for\s+)?(\d+)\s*(?:hour|hr)s?/i,
+        /remind\s+me\s+in\s+(\d+)\s*(?:minute|min)s?/i,
+        /(\d+)\s*(?:minute|min)s?\s*(?:timer|session|study)/i,
+        /(\d+)\s*(?:hour|hr)s?\s*(?:timer|session|study)/i,
+        /(\d+)hr(?:\s*(\d+)min)?\s*(?:timer|session)?/i,
+      ];
+
+      for (const re of timerRe) {
+        const m = t.match(re);
+        if (!m) continue;
+        const raw = m[0];
+        let minutes = 0, seconds = 0;
+        const n1 = parseInt(m[1]) || 0;
+        const n2 = parseInt(m[2]) || 0;
+        if (/hour|hr/i.test(raw)) { minutes = n1 * 60 + n2; } else { minutes = n1; }
+        if (minutes > 0) return { type: 'timer', data: { minutes, seconds } };
+      }
+
+      // ── CONTEXT-AWARE TIMER START (no duration — reuse last known) ──
+      // Catches: "start it", "start the timer", "begin", "it hasn't started", "go", etc.
+      // Also handles Nigerian Pidgin suffixes: "nah", "abeg", "jare", "now now", "now"
+      const startRe = /^(?:start(?:\s+(?:it|now|the\s+timer|timer))?|begin(?:\s+(?:it|now|timer))?|go(?:\s+ahead)?|launch\s+(?:it|timer)|ok\s+(?:start|go)|yes\s+(?:start|go)|let'?s\s+(?:go|start)|run\s+(?:it|timer)|it\s+hasn'?t\s+started.*|hasn'?t\s+started.*|not\s+started.*|didn'?t\s+start.*|it\s+didn'?t\s+start.*)[\s!.,]*(nah|abeg|jare|now\s*now|now|please|pls|na|sef)?[!\s.]*$/i;
+      if (startRe.test(t) && (lastTimerMinutes > 0 || lastTimerSeconds > 0)) {
+        return { type: 'timer', data: { minutes: lastTimerMinutes, seconds: lastTimerSeconds } };
+      }
+
+      // ── DRAFT / COMPOSE INTENT ──
+      const draftRe = /(?:draft|write|compose|help\s*me\s+(?:write|draft|compose|send|craft))\s+(?:an?\s+)?(?:(email|mail|whatsapp|wa message|message|msg|letter|formal\s+letter|apology|complaint|excuse\s+letter|text)(?:\s+(?:to|for)\s+([^,.?!\n]+))?|(?:to|for)\s+([^,.?!\n]+))/i;
+      const dm = text.match(draftRe);
+      if (dm) {
+        const typeRaw = (dm[1] || '').toLowerCase();
+        let msgType = 'whatsapp';
+        if (/email|mail/.test(typeRaw))                              msgType = 'email';
+        else if (/letter|formal|apology|complaint|excuse/.test(typeRaw)) msgType = 'formal';
+        const recipient = (dm[2] || dm[3] || '').trim().replace(/[.!?,]$/, '');
+        let tone = 'polite';
+        if (/formal|official|principal|admin|office|authority|letter/i.test(text)) tone = 'formal';
+        else if (/urgent|asap|emergency|immediately/i.test(text))                   tone = 'urgent';
+        else if (/friend|informal|casual|bro|guy|homie/i.test(text))                tone = 'friendly';
+        else if (/sorry|apolog|forgive/i.test(text))                                 tone = 'apologetic';
+        return { type: 'draft', data: { msgType, recipient, tone, originalText: text } };
+      }
+
+      return { type: null };
+    }
+
+    /* ── Silently start the timer from chat ── */
+    function autoStartTimer(minutes, seconds) {
+      document.getElementById('timer-min-input').value = minutes;
+      document.getElementById('timer-sec-input').value = seconds;
+      // Sync active preset highlight
+      document.querySelectorAll('.timer-preset').forEach(b => {
+        const val = parseInt(b.getAttribute('onclick')?.match(/\d+/)?.[0]);
+        b.classList.toggle('active', val === minutes);
+      });
+      startTimer();
+    }
+
+    /* ── Auto-generate a drafted message directly in chat ── */
+    async function autoDraftMessage({ msgType, recipient, tone, originalText }, rawInput) {
+      examGPTTyping = true;
+      document.getElementById('examgpt-send-btn').disabled = true;
+      showTyping();
+
+      const typeLabel = { email: 'email', whatsapp: 'WhatsApp message', formal: 'formal letter' }[msgType] || 'message';
+      const typeEmoji = { email: '📧', whatsapp: '💬', formal: '📄' }[msgType] || '💬';
+      const recipLabel = recipient ? ` to ${recipient}` : '';
+
+      // Strip the "draft/write/compose ... to X" preamble to get the actual context
+      let context = originalText
+        .replace(/^(?:draft|write|compose|help\s*me\s+(?:write|draft|compose|send|craft))\s+(?:an?\s+)?(?:email|mail|whatsapp|wa message|message|msg|letter|formal\s+letter|apology|complaint|excuse\s+letter|text)?\s*(?:to|for)?\s*\S*\s*/i, '')
+        .trim();
+      if (!context || context.length < 8) context = originalText;
+
+      const prompt = `Write a ${tone} ${typeLabel}${recipient ? ' to "' + recipient + '"' : ''}. Purpose/context: ${context}. 
+
+Return ONLY the message body — formatted, polished, and ready to copy and send. Do NOT include any intro like "Here is your message" or any explanation. Just the message itself. Keep it natural and appropriate for a Nigerian student context.`;
+
+      try {
+        const res = await callGAS('askAI', { message: prompt, conversation_history: [] });
+        const draft = res.success ? res.reply.trim() : 'Sorry, could not generate — please try again.';
+
+        removeTyping();
+
+        const draftId = 'draft_' + Date.now();
+        window['_draft_' + draftId] = draft;
+
+        // Build all tone buttons except current
+        const allTones = ['formal','polite','friendly','urgent','apologetic'];
+        const toneChipsHtml = allTones
+          .filter(t => t !== tone)
+          .map(t => {
+            const safeCtx = context.replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/`/g,"'");
+            const safeRec = (recipient||'').replace(/\\/g,'\\\\').replace(/'/g,"\\'");
+            return `<button class="draft-tone-chip" onclick="regenerateDraft('${draftId}','${t}','${msgType}','${safeRec}',\`${safeCtx}\`)">${t.charAt(0).toUpperCase()+t.slice(1)}</button>`;
+          }).join('');
+
+        const row = document.createElement('div');
+        row.className = 'msg-row ai';
+        row.innerHTML =
+          `<div class="msg-ai-icon"><img src="logo.png" alt="" style="width:22px;height:22px;object-fit:cover;border-radius:50%;"/></div>` +
+          `<div style="flex:1;min-width:0;max-width:calc(100% - 36px)">` +
+            `<div class="msg-bubble ai-rich" style="margin-bottom:8px;">` +
+              `<p class="md-p">Here's your <strong>${typeLabel}${recipLabel}</strong> — copy it or swap the tone below.</p>` +
+            `</div>` +
+            `<div class="msg-draft-card" id="${draftId}">` +
+              `<div class="msg-draft-header">` +
+                `<span class="msg-draft-icon">${typeEmoji}</span>` +
+                `<div>` +
+                  `<div class="msg-draft-title">${typeLabel.charAt(0).toUpperCase()+typeLabel.slice(1)}${recipLabel}</div>` +
+                  `<div class="msg-draft-meta">${tone.charAt(0).toUpperCase()+tone.slice(1)} tone · Ready to send</div>` +
+                `</div>` +
+              `</div>` +
+              `<div class="msg-draft-body">${draft.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br/>')}</div>` +
+              `<div class="msg-draft-actions">` +
+                `<button class="msg-draft-copy-btn" onclick="copyDraftMessage('${draftId}')">Copy</button>` +
+                (msgType === 'whatsapp' ? `<button class="msg-draft-wa-btn" onclick="sendDraftWhatsApp('${draftId}')">Send on WhatsApp</button>` : '') +
+              `</div>` +
+            `</div>` +
+            `<div class="draft-tone-chips" id="tones_${draftId}">` +
+              `<span class="draft-tone-label">Regenerate as:</span>` +
+              toneChipsHtml +
+            `</div>` +
+          `</div>`;
+
+        const container = document.getElementById('examgpt-messages');
+        container.appendChild(row);
+        container.scrollTop = container.scrollHeight;
+
+        examGPTHistory.push({ role: 'assistant', content: `Here's your ${typeLabel}${recipLabel}:\n\n${draft}` });
+
+      } catch (e) {
+        removeTyping();
+        appendMessage('ai', 'Network error — could not generate. Check your connection and try again.');
+      }
+
+      examGPTTyping = false;
+      document.getElementById('examgpt-send-btn').disabled = false;
+    }
+
+    function copyDraftMessage(draftId) {
+      const text = window['_draft_' + draftId];
+      if (!text) return;
+      navigator.clipboard.writeText(text).then(() => {
+        showToast('Message copied! ✓');
+        const btn = document.querySelector(`#${draftId} .msg-draft-copy-btn`);
+        if (btn) { btn.textContent = 'Copied!'; setTimeout(() => btn.textContent = 'Copy', 1800); }
+      }).catch(() => showToast('Copy failed — try manually'));
+    }
+
+    function sendDraftWhatsApp(draftId) {
+      const text = window['_draft_' + draftId];
+      if (!text) return;
+      window.open('https://wa.me/?text=' + encodeURIComponent(text), '_blank');
+    }
+
+    async function regenerateDraft(draftId, newTone, msgType, recipient, context) {
+      const card = document.querySelector(`#${draftId} .msg-draft-body`);
+      const meta = document.querySelector(`#${draftId} .msg-draft-meta`);
+      if (!card) return;
+
+      card.innerHTML = '<em style="color:var(--subtext)">Regenerating…</em>';
+
+      const typeLabel = { email: 'email', whatsapp: 'WhatsApp message', formal: 'formal letter' }[msgType] || 'message';
+      const prompt = `Write a ${newTone} ${typeLabel}${recipient ? ' to "' + recipient + '"' : ''}. Purpose/context: ${context}. Return ONLY the message body, ready to send. No explanations.`;
+
+      try {
+        const res = await callGAS('askAI', { message: prompt, conversation_history: [] });
+        const draft = res.success ? res.reply.trim() : 'Could not generate — try again.';
+        window['_draft_' + draftId] = draft;
+
+        card.innerHTML = draft.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br/>');
+        if (meta) meta.textContent = newTone.charAt(0).toUpperCase() + newTone.slice(1) + ' tone · Ready to send';
+
+        // Refresh tone chips
+        const toneWrap = document.getElementById('tones_' + draftId);
+        if (toneWrap) {
+          const allTones = ['formal','polite','friendly','urgent','apologetic'];
+          const safeCtx = context.replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/`/g,"'");
+          const safeRec = recipient.replace(/\\/g,'\\\\').replace(/'/g,"\\'");
+          toneWrap.innerHTML = `<span class="draft-tone-label">Regenerate as:</span>` +
+            allTones.filter(t => t !== newTone).map(t =>
+              `<button class="draft-tone-chip" onclick="regenerateDraft('${draftId}','${t}','${msgType}','${safeRec}',\`${safeCtx}\`)">${t.charAt(0).toUpperCase()+t.slice(1)}</button>`
+            ).join('');
+        }
+      } catch(e) {
+        card.innerHTML = '<em style="color:var(--error)">Failed — check connection and try again.</em>';
+      }
+    }
 
   </script>
 
