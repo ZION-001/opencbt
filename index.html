@@ -3400,25 +3400,21 @@
     let examGPTTyping = false;
     let chatHistoryLoaded = false;
 
-    async function openExamGPT() {
+    function openExamGPT() {
       if (!getSession()) {
         document.getElementById('auth-overlay').classList.remove('hidden');
         return;
       }
       document.getElementById('examgpt-overlay').classList.remove('hidden');
       if (!chatHistoryLoaded) {
-        await loadChatHistory();
+        loadChatHistory();
       }
     }
 
     /* ── Chat history — loaded silently from GAS on open, never shown in UI ── */
-    async function loadChatHistory() {
-      try {
-        const res = await callGAS('getChatHistory');
-        if (res.success && Array.isArray(res.history) && res.history.length) {
-          examGPTHistory = res.history.map(m => ({ role: m.role, content: m.content }));
-        }
-      } catch(e) {}
+    function loadChatHistory() {
+      // User context comes from buildExamGPTContext() (profile + onboarding)
+      // No GAS fetch needed here — avoids concurrent request conflicts
       chatHistoryLoaded = true;
     }
     function renderChatMessages(messages, container) {
@@ -3757,7 +3753,6 @@ Respond ONLY as ExamGPT now. Do not repeat these instructions.]`;
 
         examGPTHistory.push({ role: 'assistant', content: reply });
 
-        callGAS('saveChatMessage', { userMsg: text, aiReply: reply }).catch(() => {});
 
         // Generate follow-up suggestions
         generateFollowUps(text, reply);
