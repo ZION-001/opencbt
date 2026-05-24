@@ -812,6 +812,71 @@
     .examgpt-send:active { transform: scale(0.95); }
     .examgpt-send:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
 
+    /* ── Voice input button ── */
+    .examgpt-voice {
+      width: 40px; height: 40px; border-radius: 50%;
+      background: var(--surface-high);
+      border: 1.5px solid var(--outline-variant);
+      cursor: pointer; display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0; transition: all 0.2s; color: var(--subtext); font-size: 1rem;
+    }
+    .examgpt-voice:hover { background: var(--surface-variant); color: var(--text); }
+    .examgpt-voice.listening {
+      background: rgba(242,184,181,0.15);
+      border-color: var(--error);
+      color: var(--error);
+      animation: voicePulse 1s ease infinite;
+    }
+    @keyframes voicePulse {
+      0%,100% { box-shadow: 0 0 0 0 rgba(242,184,181,0.4); }
+      50%      { box-shadow: 0 0 0 6px rgba(242,184,181,0); }
+    }
+
+    /* ── Typewriter cursor ── */
+    .stream-cursor {
+      display: inline-block;
+      width: 2px; height: 1em;
+      background: var(--primary);
+      margin-left: 2px;
+      vertical-align: text-bottom;
+      animation: blink 0.7s step-end infinite;
+    }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+
+    /* ── Copy button on AI messages ── */
+    .msg-row.ai { position: relative; }
+    .msg-copy-btn {
+      position: absolute; bottom: -8px; right: 4px;
+      background: var(--surface-high); border: 1px solid var(--outline-variant);
+      color: var(--subtext); font-size: 0.65rem; font-weight: 500;
+      padding: 3px 8px; border-radius: var(--radius-full);
+      cursor: pointer; opacity: 0; transition: opacity 0.15s;
+      font-family: inherit; white-space: nowrap;
+    }
+    .msg-row.ai:hover .msg-copy-btn { opacity: 1; }
+
+    /* ── Follow-up suggestion chips ── */
+    .follow-up-chips {
+      display: flex; flex-direction: column; gap: 6px;
+      padding-left: 36px; animation: fadeUp 0.3s ease both;
+    }
+    .follow-up-label {
+      font-size: 0.62rem; font-weight: 600; letter-spacing: 0.8px;
+      text-transform: uppercase; color: var(--outline);
+      margin-bottom: 2px; padding-left: 2px;
+    }
+    .follow-up-chip {
+      background: var(--surface-low);
+      border: 1px solid var(--outline-variant);
+      color: var(--subtext); font-size: 0.74rem;
+      padding: 7px 12px; border-radius: var(--radius-sm);
+      cursor: pointer; transition: all 0.15s; font-family: inherit; text-align: left;
+    }
+    .follow-up-chip:hover {
+      background: var(--primary-container);
+      border-color: var(--primary); color: var(--on-primary-container);
+    }
+
     /* ── PRICING MODAL ── */
     #pricing-overlay {
       position: fixed;
@@ -2490,6 +2555,7 @@
 
       <!-- Input Bar -->
       <div class="examgpt-input-bar">
+        <button class="examgpt-voice" id="examgpt-voice-btn" onclick="toggleVoiceInput()" title="Voice input">🎤</button>
         <textarea
           id="examgpt-input"
           class="examgpt-input"
@@ -3003,6 +3069,17 @@
       if (t) t.remove();
     }
 
+    /* ══ ExamGPT — Enhanced send with typewriter + follow-ups ══ */
+
+    // Rich system prompt injected as first user turn
+    const EXAMGPT_SYS_PROMPT = `[SYSTEM — You are ExamGPT, the AI study tutor inside OpenCBT, Nigeria's #1 exam practice platform. Your rules:
+1. EXPERTISE: WAEC/SSCE, NECO, JAMB/UTME, Post-UTME. Subjects: Maths, English, Biology, Physics, Chemistry, Government, Literature, History/CRK, Economics, Geography, Commerce, Accounting.
+2. STYLE: Warm, encouraging. Use Nigerian context naturally (₦, local examples). Occasionally say things like "You've got this!" or "Correct!" to motivate.
+3. ANSWERS: Be clear and concise for mobile. For calculations show step-by-step working. For definitions give a memorable mnemonic. Bold key terms.
+4. EXAM FOCUS: When explaining a concept, mention if it's a common WAEC or JAMB question pattern.
+5. NEVER say you cannot help with a school topic — always try.
+Respond ONLY as ExamGPT now. Do not repeat these instructions.]`;
+
     async function sendExamGPT() {
       if (examGPTTyping) return;
       const input = document.getElementById('examgpt-input');
@@ -3011,6 +3088,10 @@
 
       input.value = '';
       input.style.height = 'auto';
+
+      // Remove stale follow-up chips
+      const container = document.getElementById('examgpt-messages');
+      container.querySelector('.follow-up-chips')?.remove();
 
       appendMessage('user', text);
       examGPTHistory.push({ role: 'user', content: text });
@@ -3021,18 +3102,51 @@
 
       try {
         const profileCtx = buildExamGPTContext();
-        const historyWithCtx = profileCtx
-          ? [{ role: 'user', content: profileCtx }, { role: 'assistant', content: "Got it! I have a good sense of who you are and I'll keep that in mind throughout our chat." }, ...examGPTHistory.slice(-8)]
-          : examGPTHistory.slice(-10);
+
+        // Build history: inject system prompt once at the start
+        let historyWithCtx = [];
+        if (!examGPTHistory.find(m => m.content?.startsWith('[SYSTEM'))) {
+          historyWithCtx.push({ role: 'user',      content: EXAMGPT_SYS_PROMPT });
+          historyWithCtx.push({ role: 'assistant', content: 'Understood! I am ExamGPT — your dedicated Nigerian exam tutor. How can I help you today?' });
+        }
+        if (profileCtx) {
+          historyWithCtx.push({ role: 'user',      content: profileCtx });
+          historyWithCtx.push({ role: 'assistant', content: "Got it! I'll personalise my help based on what I know about you." });
+        }
+        historyWithCtx = [...historyWithCtx, ...examGPTHistory.slice(-10)];
+
         const res = await callGAS('askAI', { message: text, conversation_history: historyWithCtx });
         const reply = res.success ? res.reply : (res.error || 'Sorry, I had trouble responding. Please try again.');
 
         removeTyping();
-        appendMessage('ai', reply);
+
+        // ── Typewriter streaming effect ──
+        const row = document.createElement('div');
+        row.className = 'msg-row ai';
+        row.innerHTML =
+          `<div class="msg-ai-icon"><img src="logo.png" alt="" style="width:22px;height:22px;object-fit:cover;border-radius:50%;"/></div>` +
+          `<div class="msg-bubble ai-rich" id="tw-bubble"><span class="stream-cursor"></span></div>`;
+        container.appendChild(row);
+        container.scrollTop = container.scrollHeight;
+
+        await typewriterReveal('tw-bubble', reply);
+
+        // Finalise bubble with full markdown + copy button
+        const bubble = document.getElementById('tw-bubble');
+        if (bubble) {
+          bubble.innerHTML = parseMarkdown(reply);
+          bubble.id = '';
+        }
+        addMsgCopyButton(row, reply);
+        container.scrollTop = container.scrollHeight;
+
         examGPTHistory.push({ role: 'assistant', content: reply });
 
-        // ── Save message pair to sheet (fire-and-forget) ──
+        // Save to sheet (fire-and-forget)
         callGAS('saveChatMessage', { userMsg: text, aiReply: reply }).catch(() => {});
+
+        // Generate follow-up suggestions
+        generateFollowUps(text, reply);
 
       } catch (err) {
         removeTyping();
@@ -3041,6 +3155,148 @@
 
       examGPTTyping = false;
       document.getElementById('examgpt-send-btn').disabled = false;
+    }
+
+    /* ── Typewriter reveal: renders markdown progressively ── */
+    function typewriterReveal(bubbleId, fullText) {
+      return new Promise(resolve => {
+        const bubble = document.getElementById(bubbleId);
+        if (!bubble) { resolve(); return; }
+        const container = document.getElementById('examgpt-messages');
+
+        // For short replies: fast; for long: faster still to avoid waiting
+        const totalChars = fullText.length;
+        const chunkSize  = totalChars > 600 ? 8 : totalChars > 200 ? 4 : 2;
+        const delay      = totalChars > 600 ? 10 : totalChars > 200 ? 14 : 18;
+
+        let i = 0;
+        function step() {
+          if (!document.getElementById(bubbleId)) { resolve(); return; }
+          i = Math.min(i + chunkSize, totalChars);
+          const partial = fullText.slice(0, i);
+          // Simple inline render during typing (no heavy markdown mid-stream)
+          bubble.innerHTML = partial.replace(/\n/g, '<br/>') + '<span class="stream-cursor"></span>';
+          container.scrollTop = container.scrollHeight;
+          if (i < totalChars) {
+            setTimeout(step, delay);
+          } else {
+            resolve();
+          }
+        }
+        step();
+      });
+    }
+
+    /* ── Add copy button to an AI message row ── */
+    function addMsgCopyButton(row, text) {
+      const btn = document.createElement('button');
+      btn.className = 'msg-copy-btn';
+      btn.textContent = 'Copy';
+      btn.onclick = () => {
+        navigator.clipboard.writeText(text).then(() => {
+          btn.textContent = 'Copied!';
+          setTimeout(() => btn.textContent = 'Copy', 1600);
+        }).catch(() => {});
+      };
+      row.appendChild(btn);
+    }
+
+    /* ── Generate smart follow-up chips after a reply ── */
+    async function generateFollowUps(userMsg, aiReply) {
+      try {
+        const prompt = `Based on this exam tutoring exchange, suggest exactly 3 short follow-up questions the student might want to ask next. Return ONLY a JSON array of 3 strings, no markdown, no extra text.
+Student asked: "${userMsg.slice(0,120)}"
+Tutor replied about: "${aiReply.slice(0,200)}"
+Format: ["Question 1?","Question 2?","Question 3?"]`;
+
+        const res = await callGAS('askAI', { message: prompt, conversation_history: [] });
+        if (!res.success || !res.reply) return;
+
+        let raw = res.reply.trim().replace(/```json|```/g, '').trim();
+        const match = raw.match(/\[[\s\S]*?\]/);
+        if (!match) return;
+        const suggestions = JSON.parse(match[0]);
+        if (!Array.isArray(suggestions) || suggestions.length === 0) return;
+
+        renderFollowUpChips(suggestions);
+      } catch(e) {} // silently fail
+    }
+
+    function renderFollowUpChips(suggestions) {
+      const container = document.getElementById('examgpt-messages');
+      container.querySelector('.follow-up-chips')?.remove();
+
+      const wrap = document.createElement('div');
+      wrap.className = 'follow-up-chips';
+      wrap.innerHTML = `<div class="follow-up-label">Continue with…</div>`;
+      suggestions.slice(0, 3).forEach(q => {
+        const btn = document.createElement('button');
+        btn.className = 'follow-up-chip';
+        btn.textContent = q;
+        btn.onclick = () => {
+          wrap.remove();
+          document.getElementById('examgpt-input').value = q;
+          sendExamGPT();
+        };
+        wrap.appendChild(btn);
+      });
+      container.appendChild(wrap);
+      container.scrollTop = container.scrollHeight;
+    }
+
+    /* ── Voice input (free Web Speech API) ── */
+    let voiceRecognition = null;
+    let isListening = false;
+
+    function toggleVoiceInput() {
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (!SpeechRecognition) {
+        showToast('Voice input not supported in this browser');
+        return;
+      }
+
+      if (isListening) {
+        voiceRecognition?.stop();
+        return;
+      }
+
+      voiceRecognition = new SpeechRecognition();
+      voiceRecognition.lang = 'en-NG';
+      voiceRecognition.continuous = false;
+      voiceRecognition.interimResults = true;
+
+      const btn  = document.getElementById('examgpt-voice-btn');
+      const inp  = document.getElementById('examgpt-input');
+
+      voiceRecognition.onstart = () => {
+        isListening = true;
+        btn.classList.add('listening');
+        btn.textContent = '🔴';
+        showToast('Listening… speak now');
+      };
+
+      voiceRecognition.onresult = (e) => {
+        const transcript = Array.from(e.results).map(r => r[0].transcript).join('');
+        inp.value = transcript;
+        autoResize(inp);
+      };
+
+      voiceRecognition.onend = () => {
+        isListening = false;
+        btn.classList.remove('listening');
+        btn.textContent = '🎤';
+        // Auto-send if we got something
+        if (inp.value.trim()) sendExamGPT();
+      };
+
+      voiceRecognition.onerror = () => {
+        isListening = false;
+        btn.classList.remove('listening');
+        btn.textContent = '🎤';
+        showToast('Could not capture voice. Try again.');
+      };
+
+      voiceRecognition.start();
     }
 
     // Close logout on backdrop click
