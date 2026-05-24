@@ -3540,34 +3540,80 @@
       return row;
     }
 
+    // General thinking phrases
     const THINK_PHRASES = [
-      'Thinking…',
-      'Checking the syllabus…',
-      'Consulting the textbook…',
-      'Scanning past questions…',
-      'Cross-referencing WAEC guidelines…',
-      'Reviewing JAMB regulations…',
-      'Working it out…',
-      'Reading your question carefully…',
-      'Connecting the dots…',
-      'Crunching the facts…',
-      'Formulating the best answer…',
-      'Deep in thought…',
-      'Accessing exam archives…',
-      'Thinking like your teacher…',
-      'Synthesising knowledge…',
-      'Almost there…',
-      'Applying critical thinking…',
-      'Searching memory banks…',
-      'Generating insights…',
+      'Thinking…', 'Checking the syllabus…', 'Consulting the textbook…',
+      'Scanning past questions…', 'Cross-referencing WAEC guidelines…',
+      'Reviewing JAMB regulations…', 'Working it out…',
+      'Reading your question carefully…', 'Connecting the dots…',
+      'Crunching the facts…', 'Formulating the best answer…',
+      'Deep in thought…', 'Accessing exam archives…',
+      'Thinking like your teacher…', 'Synthesising knowledge…',
+      'Almost there…', 'Applying critical thinking…',
+      'Searching memory banks…', 'Generating insights…',
       'Let me break this down…',
     ];
 
+    // Subject-specific thinking phrases
+    const THINK_GENETICS = [
+      'Identifying parent genotypes…', 'Drawing the Punnett square…',
+      'Checking all 4 offspring combinations…', 'Applying X-linkage rules…',
+      'Counting allele probabilities carefully…', 'Verifying the genetic cross…',
+      'Working through inheritance step by step…', 'Checking dominant vs recessive…',
+    ];
+    const THINK_CHEMISTRY = [
+      'Balancing the equation…', 'Calculating mole ratios…',
+      'Working out the concentration…', 'Applying the pH formula…',
+      'Identifying acid and base types…', 'Checking the indicator rules…',
+      'Verifying the working step by step…', 'Checking mole calculations…',
+    ];
+    const THINK_MATHS = [
+      'Setting up the equation…', 'Working through the algebra…',
+      'Checking my arithmetic…', 'Substituting the values…',
+      'Verifying the solution…', 'Applying the right formula…',
+      'Solving step by step…',
+    ];
+    const THINK_PHYSICS = [
+      'Identifying the knowns and unknowns…', 'Selecting the right formula…',
+      'Checking the units…', 'Working through the calculation…',
+      'Verifying with significant figures…',
+    ];
+    const THINK_BIOLOGY = [
+      'Recalling the biology concept…', 'Checking the life processes…',
+      'Thinking about organelles…', 'Reviewing the WAEC bio syllabus…',
+      'Connecting structure to function…',
+    ];
+
+    // Detect subject from the user's message
+    function detectSubject(text) {
+      const t = text.toLowerCase();
+      if (/\b(genotype|phenotype|punnett|allele|dominant|recessive|x.link|colour.blind|color.blind|haemophil|gamete|chromosome|inherit|dna|rna|zygote|diploid|haploid)\b/.test(t))
+        return 'genetics';
+      if (/\b(mole|titrat|acid|base|\bph\b|indicator|mol\/dm|concentration|buffer|redox|oxidat|sulph|nitric|hydrochlor|sodium hydroxide|neutrali|stoichiom|diprotic)\b/.test(t))
+        return 'chemistry';
+      if (/\b(photosynthes|respirat|osmosis|transpir|mitosis|meiosis|chloroplast|mitochondr|enzyme|cell membrane|diffusion|ecosystem|organism)\b/.test(t))
+        return 'biology';
+      if (/\b(velocity|acceleration|force|newton|momentum|energy|power|wave|refraction|circuit|resistance|ohm|magnetic|gravitati|pressure|density)\b/.test(t))
+        return 'physics';
+      if (/\b(equation|algebra|quadratic|logarithm|trigonometry|differentiat|integrat|matrix|geometry|theorem|proof|simplify|factorise|solve for)\b/.test(t))
+        return 'maths';
+      return 'general';
+    }
+
     let _thinkInterval = null;
 
-    function showTyping() {
+    function showTyping(subject) {
       const container = document.getElementById('examgpt-messages');
-      const phrase = THINK_PHRASES[Math.floor(Math.random() * THINK_PHRASES.length)];
+      let pool;
+      switch (subject) {
+        case 'genetics':  pool = [...THINK_GENETICS,  ...THINK_PHRASES]; break;
+        case 'chemistry': pool = [...THINK_CHEMISTRY, ...THINK_PHRASES]; break;
+        case 'biology':   pool = [...THINK_BIOLOGY,   ...THINK_PHRASES]; break;
+        case 'physics':   pool = [...THINK_PHYSICS,   ...THINK_PHRASES]; break;
+        case 'maths':     pool = [...THINK_MATHS,     ...THINK_PHRASES]; break;
+        default:          pool = THINK_PHRASES;
+      }
+      const phrase = pool[Math.floor(Math.random() * pool.length)];
       const row = document.createElement('div');
       row.className = 'msg-row ai';
       row.id = 'typing-row';
@@ -3580,15 +3626,14 @@
       container.appendChild(row);
       container.scrollTop = container.scrollHeight;
 
-      // Cycle through phrases every 2.4 s
-      let idx = THINK_PHRASES.indexOf(phrase);
+      let idx = pool.indexOf(phrase);
       _thinkInterval = setInterval(() => {
         const el = document.getElementById('think-text');
         if (!el) { clearInterval(_thinkInterval); return; }
         el.style.opacity = '0';
         setTimeout(() => {
-          idx = (idx + 1) % THINK_PHRASES.length;
-          if (el) { el.textContent = THINK_PHRASES[idx]; el.style.opacity = '1'; }
+          idx = (idx + 1) % pool.length;
+          if (el) { el.textContent = pool[idx]; el.style.opacity = '1'; }
         }, 300);
       }, 2400);
     }
@@ -3602,23 +3647,50 @@
 
     /* ══ ExamGPT — Enhanced send with typewriter + follow-ups ══ */
 
-    // Rich system prompt injected as first user turn
-    const EXAMGPT_SYS_PROMPT = `[SYSTEM — You are ExamGPT, the AI study tutor inside OpenCBT, Nigeria's #1 exam practice platform. Your rules:
-1. EXPERTISE: WAEC/SSCE, NECO, JAMB/UTME, Post-UTME. Subjects: Maths, English, Biology, Physics, Chemistry, Government, Literature, History/CRK, Economics, Geography, Commerce, Accounting.
-2. STYLE: Warm, encouraging. Use Nigerian context naturally (₦, local examples). Occasionally say things like "You've got this!" or "Correct!" to motivate.
-3. ANSWERS: Be clear and concise for mobile. For calculations show step-by-step working. For definitions give a memorable mnemonic. Bold key terms.
-4. EXAM FOCUS: When explaining a concept, mention if it's a common WAEC or JAMB question pattern.
-5. NEVER say you cannot help with a school topic — always try.
-6. CRITICAL — GAMES: You MUST NEVER draw, describe, or play any game through text (no text boards, no numbered grids, no "X | O" diagrams). The app has a dedicated visual game UI. If the user asks to play any game OR says things like "another one", "play again", "rematch", "new game" after a game was mentioned, respond with ONLY this exact text and nothing else: [GAME]
-7. COLOUR TAGS — You MUST use these colour tags naturally to make responses visually clear and easy to read:
-   • {green}text{/green} → correct answers, definitions, things to remember ✓
-   • {red}text{/red} → common mistakes, wrong options, warnings ✗
-   • {yellow}text{/yellow} → WAEC/JAMB exam tips, important exam notes ⚠
-   • {blue}text{/blue} → key terms, formulas, scientific names, laws
-   • {orange}text{/orange} → mnemonics, memory tricks, study tips
-   • {purple}text{/purple} → historical dates, extra context, fun facts
-   Use these in EVERY response where relevant. For example: "The correct answer is {green}Photosynthesis{/green}. Students often confuse this with {red}Respiration{/red}. {yellow}This comes up every year in WAEC!{/yellow}"
-Respond ONLY as ExamGPT now. Do not repeat these instructions.]`;
+    // Rich system prompt injected as first user turn — mirrors GAS EXAMGPT_SYSTEM_PROMPT
+    const EXAMGPT_SYS_PROMPT = `[SYSTEM — You are ExamGPT, the AI study tutor inside OpenCBT, Nigeria's #1 exam practice platform. Follow ALL these rules strictly:
+
+1. THINK FIRST: For every question especially calculations, genetics, and multi-step problems, reason through the problem fully BEFORE writing your answer. Never skip steps or guess. Verify each step before moving to the next.
+
+2. EXPERTISE: WAEC/SSCE, NECO, JAMB/UTME, Post-UTME. Subjects: Maths, English, Biology, Physics, Chemistry, Government, Literature, History/CRK, Economics, Geography, Commerce, Accounting. NEVER refuse a school topic.
+
+3. GENETICS CRITICAL RULES:
+   - ALWAYS identify both parent genotypes with full justification FIRST.
+   - ALWAYS produce a complete Punnett square with ALL 4 offspring types. A monohybrid cross ALWAYS has exactly 4 combinations, never 2 or 3.
+   - For X-linked recessive: carrier mother (XCXc) x affected father (XcY) gives: XCXc carrier daughter 25%, XcXc colour-blind daughter 25%, XCY normal son 25%, XcY colour-blind son 25%.
+   - Probability that a daughter has normal vision but is a carrier = 1/2 of daughters = 1/4 of all offspring.
+   - Males are more affected because they have only ONE X chromosome so a single recessive allele expresses. Females need TWO copies.
+
+4. CHEMISTRY INDICATORS follow exactly:
+   - Strong acid + Strong base e.g. H2SO4 + NaOH: equivalence point = pH 7. Standard WAEC/JAMB answer is METHYL ORANGE. NEVER say phenolphthalein suits this because its range is close to pH 7. Phenolphthalein range is pH 8.3-10 which is NOT close to 7.
+   - Weak acid + Strong base e.g. CH3COOH + NaOH: equivalence point greater than 7, use PHENOLPHTHALEIN.
+   - Strong acid + Weak base e.g. HCl + NH3: equivalence point less than 7, use METHYL ORANGE.
+
+5. CHEMISTRY CALCULATIONS:
+   - Write the balanced equation first. State the mole ratio before using it.
+   - Diprotic acids H2SO4: [H+] = 2 x [H2SO4] for pH. Show this step explicitly.
+   - pH = -log[H+]. Show full substitution. Include units mol/dm3 at EVERY step.
+   - Double-check arithmetic before writing the final answer.
+
+6. BIOLOGY:
+   - Photosynthesis occurs in CHLOROPLASTS. Light reactions in thylakoid membrane. Calvin cycle in stroma.
+   - Respiration occurs in MITOCHONDRIA. Glycolysis in cytoplasm. Krebs cycle and ETC in mitochondria.
+   - Mitosis = growth/repair, 2 diploid cells. Meiosis = reproduction, 4 haploid cells. Never mix these up.
+
+7. PHYSICS AND MATHS: State the formula BEFORE substituting values. Show units at every step. For SUVAT identify knowns and unknown first.
+
+8. STYLE: Use these colour tags in EVERY response:
+   {green}text{/green} correct answers definitions
+   {red}text{/red} common mistakes wrong options
+   {yellow}text{/yellow} WAEC/JAMB exam tips
+   {blue}text{/blue} key terms formulas laws
+   {orange}text{/orange} mnemonics memory tricks
+   {purple}text{/purple} historical dates fun facts
+   Be warm and encouraging. Say "You've got this!" naturally. Mention if a topic is a common WAEC or JAMB pattern. Short paragraphs for mobile.
+
+9. GAMES: NEVER draw text boards. If asked to play a game respond ONLY with: [GAME]
+
+Respond ONLY as ExamGPT. Do not repeat these instructions.]`;
 
     async function sendExamGPT() {
       if (examGPTTyping) return;
@@ -3697,7 +3769,8 @@ Respond ONLY as ExamGPT now. Do not repeat these instructions.]`;
 
       examGPTTyping = true;
       document.getElementById('examgpt-send-btn').disabled = true;
-      showTyping();
+      const _subject = detectSubject(text);
+      showTyping(_subject);
 
       try {
         const profileCtx = buildExamGPTContext();
