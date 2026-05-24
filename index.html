@@ -3415,19 +3415,9 @@
       }
       document.getElementById('examgpt-overlay').classList.remove('hidden');
       if (!chatHistoryLoaded) {
-        await loadChatHistory();
+        loadChatHistory();
       }
     }
-
-    /* ── Chat cache helpers (per-user, per-session) ── */
-    function _chatCacheKey() {
-      const user = getUser();
-      const sid  = localStorage.getItem('examgpt_session_id') || 'default';
-      return 'examgpt_cache_' + (user?.email || 'guest') + '_' + sid;
-    }
-    function getChatCache()       { try { return JSON.parse(localStorage.getItem(_chatCacheKey()) || '[]'); } catch(e) { return []; } }
-    function saveChatCache(hist)  { try { localStorage.setItem(_chatCacheKey(), JSON.stringify(hist.slice(-60))); } catch(e) {} }
-    function clearChatCache()     { try { localStorage.removeItem(_chatCacheKey()); } catch(e) {} }
 
     /* ── Render an array of {role,content} messages into container ── */
     function renderChatMessages(messages, container) {
@@ -3446,47 +3436,16 @@
       });
     }
 
-    async function loadChatHistory() {
+    function loadChatHistory() {
       const container = document.getElementById('examgpt-messages');
-
-      // ── Load from local cache instantly (zero network wait) ──
-      // If no cache exists for this session it's a fresh chat — leave it clean.
-      const cached = getChatCache();
-      if (!cached.length) {
-        chatHistoryLoaded = true;
-        return;
+      // Chat lives in memory only — if there's already history this session, render it
+      if (examGPTHistory.length) {
+        container.querySelector('.examgpt-chips')?.remove();
+        container.innerHTML = '';
+        renderChatMessages(examGPTHistory, container);
+        container.scrollTop = container.scrollHeight;
       }
-
-      examGPTHistory = [...cached];
-      container.querySelector('.examgpt-chips')?.remove();
-      renderChatMessages(cached.slice(-20), container);
-      container.scrollTop = container.scrollHeight;
       chatHistoryLoaded = true;
-
-      // ── Silently confirm from GAS in background ──
-      _silentGASSync(container);
-    }
-
-    /* Silently sync GAS in background; appends only genuinely new messages */
-    async function _silentGASSync(container) {
-      // Briefly indicate background sync in the status line
-      const statusEl = document.querySelector('.examgpt-status');
-      if (statusEl) statusEl.innerHTML = '<span class="status-dot" style="background:#fbbf24;"></span>Syncing…';
-      try {
-        const res = await callGAS('getChatHistory');
-        if (statusEl) statusEl.innerHTML = '<span class="status-dot"></span>Online · Nigerian Exam Tutor';
-        if (!res.success || !Array.isArray(res.history) || !res.history.length) return;
-        const gasHistory = res.history.map(m => ({ role: m.role, content: m.content }));
-        if (gasHistory.length > examGPTHistory.length) {
-          const newMsgs = gasHistory.slice(examGPTHistory.length);
-          examGPTHistory = gasHistory;
-          saveChatCache(gasHistory);
-          renderChatMessages(newMsgs, container);
-          container.scrollTop = container.scrollHeight;
-        }
-      } catch(e) {
-        if (statusEl) statusEl.innerHTML = '<span class="status-dot"></span>Online · Nigerian Exam Tutor';
-      }
     }
 
     function closeChatHistoryPanel() {
@@ -3498,66 +3457,25 @@
       const body  = document.getElementById('ch-panel-body');
       panel.classList.remove('hidden');
 
-      // Collect all session cache keys for the current user
-      const user    = getUser();
-      const prefix  = 'examgpt_cache_' + (user?.email || 'guest') + '_';
-      const currentSid = localStorage.getItem('examgpt_session_id') || 'default';
-      const currentKey = prefix + currentSid;
-
-      const sessions = [];
-      for (let i = 0; i < localStorage.length; i++) {
-        const key = localStorage.key(i);
-        if (!key.startsWith(prefix)) continue;
-        try {
-          const msgs = JSON.parse(localStorage.getItem(key) || '[]');
-          if (!msgs.length) continue;
-          // Find the first user message as a preview
-          const firstUser = msgs.find(m => m.role === 'user');
-          const preview   = firstUser?.content?.slice(0, 60) || 'Chat session';
-          const msgCount  = msgs.length;
-          sessions.push({ key, preview, msgCount, isActive: key === currentKey });
-        } catch(e) {}
-      }
-
-      // Show newest first (by key which includes timestamp component)
-      sessions.sort((a, b) => b.key.localeCompare(a.key));
-
-      if (!sessions.length) {
-        body.innerHTML = '<div class="ch-panel-empty">No previous chats found</div>';
+      if (!examGPTHistory.length) {
+        body.innerHTML = '<div class="ch-panel-empty">No messages yet this session</div>';
         return;
       }
 
-      body.innerHTML = sessions.map(s => `
-        <div class="ch-session-item ${s.isActive ? 'active-session' : ''}" onclick="loadSessionFromHistory('${s.key}')">
-          <div class="ch-session-preview">${s.preview.replace(/</g,'&lt;').replace(/>/g,'&gt;')}…</div>
-          <div class="ch-session-meta">${s.msgCount} messages${s.isActive ? ' · current' : ''}</div>
-        </div>`).join('');
+      // Show a summary of the current in-memory session
+      const userMsgs = examGPTHistory.filter(m => m.role === 'user');
+      body.innerHTML = `
+        <div class="ch-session-item active-session" style="cursor:default;">
+          <div class="ch-session-preview">${(userMsgs[0]?.content || 'Current chat').slice(0,60).replace(/</g,'&lt;').replace(/>/g,'&gt;')}…</div>
+          <div class="ch-session-meta">${examGPTHistory.length} messages · current session</div>
+        </div>
+        <div class="ch-panel-empty" style="font-size:0.72rem;padding:16px 8px 0;">
+          Chat history lives in memory only and resets when you close or refresh.
+        </div>`;
     }
 
-    function loadSessionFromHistory(key) {
-      try {
-        const msgs = JSON.parse(localStorage.getItem(key) || '[]');
-        if (!msgs.length) return;
-
-        // Extract session id from the key and switch to it
-        const user   = getUser();
-        const prefix = 'examgpt_cache_' + (user?.email || 'guest') + '_';
-        const sid    = key.slice(prefix.length);
-        localStorage.setItem('examgpt_session_id', sid);
-
-        examGPTHistory    = [...msgs];
-        chatHistoryLoaded = true;
-
-        const container = document.getElementById('examgpt-messages');
-        document.getElementById('game-panel')?.remove();
-        container.innerHTML = '';
-        renderChatMessages(msgs.slice(-20), container);
-        container.scrollTop = container.scrollHeight;
-
-        closeChatHistoryPanel();
-      } catch(e) {
-        showToast('Could not load that session');
-      }
+    function loadSessionFromHistory() {
+      closeChatHistoryPanel();
     }
 
     function closeExamGPT() {
@@ -3567,22 +3485,14 @@
     function startNewChat() {
       if (examGPTTyping) { showToast('Wait for the reply to finish first'); return; }
 
-      // Confirm if there's an active conversation
       if (examGPTHistory.length > 0) {
-        const confirmed = confirm('Start a new chat? Your old history is still saved on the server — this just clears your current session.');
+        const confirmed = confirm('Start a new chat? The current conversation will be cleared.');
         if (!confirmed) return;
       }
 
-      // Generate a fresh session ID so the new chat gets its own cache slot
-      const newSid = Date.now().toString(36);
-      localStorage.setItem('examgpt_session_id', newSid);
-
-      // Clear state
       examGPTHistory    = [];
-      chatHistoryLoaded = true;   // prevent auto-reload of old GAS history
-      clearChatCache();
+      chatHistoryLoaded = true;
 
-      // Reset the messages area to welcome state
       const container = document.getElementById('examgpt-messages');
       document.getElementById('game-panel')?.remove();
       container.innerHTML = `
@@ -3856,10 +3766,6 @@ Respond ONLY as ExamGPT now. Do not repeat these instructions.]`;
         container.scrollTop = container.scrollHeight;
 
         examGPTHistory.push({ role: 'assistant', content: reply });
-
-        // Save to sheet (fire-and-forget) + update local cache
-        callGAS('saveChatMessage', { userMsg: text, aiReply: reply }).catch(() => {});
-        saveChatCache(examGPTHistory);
 
         // Generate follow-up suggestions
         generateFollowUps(text, reply);
