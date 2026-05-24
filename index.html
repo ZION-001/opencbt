@@ -3407,9 +3407,18 @@
       }
       document.getElementById('examgpt-overlay').classList.remove('hidden');
       if (!chatHistoryLoaded) {
-        loadChatHistory();
+        await loadChatHistory();
       }
     }
+
+    /* ── Chat cache helpers — silent persistence, not exposed in UI ── */
+    function _chatCacheKey() {
+      const user = getUser();
+      return 'examgpt_cache_' + (user?.email || 'guest');
+    }
+    function getChatCache()       { try { return JSON.parse(localStorage.getItem(_chatCacheKey()) || '[]'); } catch(e) { return []; } }
+    function saveChatCache(hist)  { try { localStorage.setItem(_chatCacheKey(), JSON.stringify(hist.slice(-60))); } catch(e) {} }
+    function clearChatCache()     { try { localStorage.removeItem(_chatCacheKey()); } catch(e) {} }
 
     /* ── Render an array of {role,content} messages into container ── */
     function renderChatMessages(messages, container) {
@@ -3428,16 +3437,33 @@
       });
     }
 
-    function loadChatHistory() {
+    async function loadChatHistory() {
       const container = document.getElementById('examgpt-messages');
-      // Chat lives in memory only — if there's already history this session, render it
-      if (examGPTHistory.length) {
-        container.querySelector('.examgpt-chips')?.remove();
-        container.innerHTML = '';
-        renderChatMessages(examGPTHistory, container);
-        container.scrollTop = container.scrollHeight;
+
+      // Load from local cache instantly — completely silent, no UI indicator
+      const cached = getChatCache();
+      if (cached.length) {
+        examGPTHistory = [...cached];
+        // Don't render old messages visually — ExamGPT just has the context in memory
       }
       chatHistoryLoaded = true;
+
+      // Silently confirm / extend from GAS in background (no status text shown)
+      _silentGASSync(container);
+    }
+
+    /* Background GAS sync — updates memory only, never touches the visible chat UI */
+    async function _silentGASSync(container) {
+      try {
+        const res = await callGAS('getChatHistory');
+        if (!res.success || !Array.isArray(res.history) || !res.history.length) return;
+        const gasHistory = res.history.map(m => ({ role: m.role, content: m.content }));
+        if (gasHistory.length > examGPTHistory.length) {
+          examGPTHistory = gasHistory;
+          saveChatCache(gasHistory);
+          // Do NOT render anything — history is memory context only
+        }
+      } catch(e) {}
     }
 
     function closeChatHistoryPanel() {
@@ -3484,6 +3510,7 @@
 
       examGPTHistory    = [];
       chatHistoryLoaded = true;
+      clearChatCache();
 
       const container = document.getElementById('examgpt-messages');
       document.getElementById('game-panel')?.remove();
@@ -3758,6 +3785,10 @@ Respond ONLY as ExamGPT now. Do not repeat these instructions.]`;
         container.scrollTop = container.scrollHeight;
 
         examGPTHistory.push({ role: 'assistant', content: reply });
+
+        // Persist silently behind the scenes — user never sees this
+        callGAS('saveChatMessage', { userMsg: text, aiReply: reply }).catch(() => {});
+        saveChatCache(examGPTHistory);
 
         // Generate follow-up suggestions
         generateFollowUps(text, reply);
